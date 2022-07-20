@@ -1,0 +1,1785 @@
+
+import random
+from time import sleep
+global training_cost
+training_cost = 10
+global start_end
+start_end = 0
+global start_count
+start_count = 0
+
+sinkoudo    = {"0":"0","1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0"}
+weapon_flag = {"0":"0","1":"1","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0"}
+equip_flag  = {"1":"1","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0"}
+sin_flag    = {"憤怒":"0","怠惰":"0","暴食":"0","嫉妬":"0","色欲":"0","強欲":"0","傲慢":"0"}
+skill_flag  = {"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0"}
+enemy_kill  = {"0":"0","1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0"}
+boss_kill   = {"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","100":"0","101":"0"}
+boss_win    = {"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","100":"0","101":"0"}
+
+hero        = {"名前":" ","種族":"異界人","レベル":"1",
+             "最大HP":"0","現在HP":"0",
+             "最大MP":"0","現在MP":"0",
+             "攻撃力":"0","防御力":"0","素早さ":"0",
+             "会心率":"5","会心倍率":"2", 
+             "回避率":"5","命中率":"95",
+             "装備武器":"無し","武器攻撃力":"0","攻撃力倍率":"0",
+             "装備防具":"無し","防具防御力":"0","ダメージカット率":"0",
+             "必要経験値":"100","次のレベルまで":"100","所持金":"0"}
+hero_kiso   = {"HP":"100", "MP":"100","攻撃力":"100","防御力":"100","素早さ":"10",}
+hero_buff   = {"攻撃力":"0","防御力":"0","素早さ":"0"}
+hero_debuff = {"攻撃力":"0","防御力":"0","素早さ":"0"}
+hero_ijyou  = {"毒":"0","麻痺":"0","素早さ":"0"}
+
+enemy_1    = {"名前":"","レベル":"","ボス":"",
+             "最大HP":"","現在HP":"", "最大MP":"","現在MP":"",
+             "攻撃力":"","防御力":"","素早さ":"",
+             "会心率":"","会心倍率":"", "回避率":"","命中率":"",
+             "ダメージカット率":"","討伐報酬":"","経験値":"","AI":""}
+
+enemy_000 = {"名前":"無限の住人","レベル":"1000","ボス":"0",
+             "基礎HP":"100000", "基礎MP":"2000","基礎攻撃力":"1000","基礎防御力":"1000","基礎素早さ":"1000000000000",
+             "会心率":"50","会心倍率":"2","回避率":"5","命中率":"80","ダメージカット率":"0",
+             "基礎討伐報酬":"50000000","基礎経験値":"5000000000","AI":"0"}
+
+enemy_001 = {"名前":"ブルースライム","レベル":"1","ボス":"0",
+             "基礎HP":"100", "基礎MP":"200","基礎攻撃力":"100","基礎防御力":"50","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2","回避率":"5","命中率":"95","ダメージカット率":"10",
+             "基礎討伐報酬":"50","基礎経験値":"50","AI":"1"}
+enemy_002 = {"名前":"レッドスライム","レベル":"1","ボス":"0",
+             "基礎HP":"100","基礎MP":"200","基礎攻撃力":"150","基礎防御力":"50","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2","回避率":"5","命中率":"95","ダメージカット率":"10",
+             "基礎討伐報酬":"50","基礎経験値":"50","AI":"1"}
+enemy_003 = {"名前":"グリーンスライム","レベル":"2","ボス":"0",
+             "基礎HP":"100","基礎MP":"200","基礎攻撃力":"100","基礎防御力":"80","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2","回避率":"5","命中率":"95","ダメージカット率":"10",
+             "基礎討伐報酬":"50","基礎経験値":"50","AI":"1"}
+enemy_004 = {"名前":"ポイズンスライム","レベル":"3","ボス":"0",
+             "基礎HP":"100","基礎MP":"200","基礎攻撃力":"110","基礎防御力":"60","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2", "回避率":"5","命中率":"95","ダメージカット率":"10",
+             "基礎討伐報酬":"100","基礎経験値":"100","AI":"5"}
+enemy_005 = {"名前":"アイアンスライム","レベル":"4","ボス":"0",
+             "基礎HP":"130","基礎MP":"200","基礎攻撃力":"120","基礎防御力":"100","基礎素早さ":"0",
+             "会心率":"5","会心倍率":"2","回避率":"5","命中率":"95","ダメージカット率":"30",
+             "基礎討伐報酬":"500","基礎経験値":"200","AI":"1"}
+enemy_006 = {"名前":"シルバースライム","レベル":"20","ボス":"0",
+             "基礎HP":"500","基礎MP":"5000","基礎攻撃力":"300","基礎防御力":"300","基礎素早さ":"200",
+             "会心率":"50","会心倍率":"3", "回避率":"50","命中率":"100","ダメージカット率":"50",
+             "基礎討伐報酬":"1000","基礎経験値":"2000","AI":"2"}
+enemy_007 = {"名前":"ゴールデンスライム","レベル":"1","ボス":"0",
+             "基礎HP":"2","基礎MP":"500","基礎攻撃力":"20","基礎防御力":"2000000","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2","回避率":"50","命中率":"95","ダメージカット率":"99",
+             "基礎討伐報酬":"5000","基礎経験値":"500","AI":"3"}
+enemy_008 = {"名前":"スライムの王","レベル":"10","ボス":"1","補正値1":"100","補正値2":"50",
+             "基礎HP":"500","基礎MP":"200","基礎攻撃力":"150","基礎防御力":"50","基礎素早さ":"10",
+             "会心率":"0","会心倍率":"2","回避率":"0","命中率":"80", "ダメージカット率":"0",
+             "基礎討伐報酬":"3000","基礎経験値":"2000","AI":"4"}
+
+enemy_009 = {"名前":"骸骨剣士","レベル":"15","ボス":"0",
+             "基礎HP":"1000","基礎MP":"500","基礎攻撃力":"500","基礎防御力":"200","基礎素早さ":"250",
+             "会心率":"5","会心倍率":"2","回避率":"20","命中率":"95","ダメージカット率":"0",
+             "基礎討伐報酬":"500","基礎経験値":"500","AI":"6"}
+enemy_010 = {"名前":"骸骨盾士","レベル":"15","ボス":"0",
+             "基礎HP":"2000","基礎MP":"500","基礎攻撃力":"100","基礎防御力":"500","基礎素早さ":"50",
+             "会心率":"5","会心倍率":"2","回避率":"0","命中率":"95","ダメージカット率":"30",
+             "基礎討伐報酬":"500","基礎経験値":"500","AI":"7"}
+enemy_011 = {"名前":"骸骨槍士","レベル":"15","ボス":"0",
+             "基礎HP":"800","基礎MP":"500","基礎攻撃力":"300","基礎防御力":"200","基礎素早さ":"500",
+             "会心率":"5","会心倍率":"2","回避率":"20","命中率":"85","ダメージカット率":"0",
+             "基礎討伐報酬":"500","基礎経験値":"600","AI":"8"}
+enemy_012 = {"名前":"骸骨魔術士","レベル":"18","ボス":"0",
+             "基礎HP":"300","基礎MP":"50000","基礎攻撃力":"1000","基礎防御力":"0","基礎素早さ":"100",
+             "会心率":"0","会心倍率":"1","回避率":"0","命中率":"100","ダメージカット率":"0",
+             "基礎討伐報酬":"500","基礎経験値":"650","AI":"9"}
+enemy_013 = {"名前":"白銀骸骨","レベル":"25","ボス":"0",
+             "基礎HP":"5000","基礎MP":"500000","基礎攻撃力":"2500","基礎防御力":"1500","基礎素早さ":"1000",
+             "会心率":"25","会心倍率":"2","回避率":"30","命中率":"100","ダメージカット率":"40",
+             "基礎討伐報酬":"5000","基礎経験値":"500000","AI":"2"}
+enemy_014 = {"名前":"黄金骸骨","レベル":"1","ボス":"0",
+             "基礎HP":"3","基礎MP":"5000","基礎攻撃力":"200","基礎防御力":"20000000000","基礎素早さ":"150",
+             "会心率":"5","会心倍率":"2","回避率":"20","命中率":"95","ダメージカット率":"99",
+             "基礎討伐報酬":"30000","基礎経験値":"100","AI":"3"}
+enemy_015 = {"名前":"骸骨将軍","レベル":"30","ボス":"1","補正値1":"2000","補正値2":"1000",
+             "基礎HP":"10000","基礎MP":"50000","基礎攻撃力":"1500","基礎防御力":"1000","基礎素早さ":"1000",
+             "会心率":"5","会心倍率":"2","回避率":"20","命中率":"99","ダメージカット率":"0",
+             "基礎討伐報酬":"500000","基礎経験値":"50000","AI":"10"}
+
+enemy_00 = {"名前":"黄金蛇","レベル":"1","ボス":"0",
+            "基礎HP":"10","基礎MP":"500","基礎攻撃力":"20","基礎防御力":"2000000","基礎素早さ":"10",
+             "会心率":"5","会心倍率":"2","回避率":"50","命中率":"95","ダメージカット率":"99",
+             "基礎討伐報酬":"50000000","基礎経験値":"500","AI":"ai_003"}
+enemy_00 = {"名前":"単眼鬼","レベル":"1",
+             "基礎HP":"10000","基礎攻撃力":"300","基礎防御力":"100","基礎素早さ":"10",
+             "会心率":"10","会心倍率":"2","回避率":"0","命中率":"50","ダメージカット率":"10",
+             "基礎討伐報酬":"200",}
+enemy_00 = {"名前":"首狩兎","レベル":"1",
+             "基礎HP":"200","基礎攻撃力":"800","基礎防御力":"20","基礎素早さ":"100",
+             "会心率":"100","会心倍率":"50","回避率":"5","命中率":"90","ダメージカット率":"0",
+             "基礎討伐報酬":"50",}
+enemy_00 = {"名前":"王の影","レベル":"1",
+             "基礎HP":"2000","基礎攻撃力":"50000","基礎防御力":"2000","素早さ":"10",
+             "会心率":"30","会心倍率":"2",
+             "回避率":"15","命中率":"95",
+             "攻撃倍率":"200","ダメージカット率":"30",
+             "基礎討伐報酬":"50000","討伐報酬":"50000"}
+enemy_100 = {"名前":"魔族の王","レベル":"0","ボス":"1",
+             "基礎HP":"1","基礎MP":"1","基礎攻撃力":"2","基礎防御力":"2","基礎素早さ":"0",
+             "会心率":"0","会心倍率":"0",
+             "回避率":"0","命中率":"95",
+             "ダメージカット率":"0",
+             "基礎討伐報酬":"500000","基礎経験値":"500000000",}
+
+lv_jyougen = [100,500,1000,3000,10000,20000,50000]
+
+encount_000 = [enemy_000]
+encount_001 = [enemy_001,enemy_002,enemy_003,enemy_004,enemy_005,enemy_006,enemy_007]
+encount_002 = [enemy_009,enemy_010,enemy_011,enemy_012,enemy_013,enemy_014]
+
+skill_0 = {"名前":"","分類":"","消費MP":"","威力":"",}
+skill_000 = {"名前":"逃走","分類":"特殊","消費MP":"0","威力":"0",}
+skill_001 = {"名前":"体当たり","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"1",}
+skill_002 = {"名前":"通常攻撃","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"1",}
+skill_003 = {"名前":"白銀之光・罪","分類":"攻撃","消費MP":"200","威力":"300","攻撃回数":"1",}
+skill_004 = {"名前":"白銀之光・罰","分類":"攻撃","消費MP":"500","威力":"500","攻撃回数":"1",}
+skill_005 = {"名前":"決死の打突","分類":"攻撃","消費MP":"500","威力":"250","攻撃回数":"1",}
+skill_006 = {"名前":"力貯め","分類":"支援","消費MP":"50","威力":"50","対象":"攻撃力"}
+skill_007 = {"名前":"分裂","分類":"支援","消費MP":"10","威力":"100","対象":"回避率"}
+skill_008 = {"名前":"集中","分類":"支援","消費MP":"20","威力":"100","対象":"命中率"}
+skill_009 = {"名前":"縮小","分類":"支援","消費MP":"15","威力":"50","対象":"素早さ"}
+skill_010 = {"名前":"突進","分類":"攻撃","消費MP":"100","威力":"200","攻撃回数":"1",}
+skill_011 = {"名前":"強斬撃","分類":"攻撃","消費MP":"150","威力":"200","攻撃回数":"1",}
+skill_012 = {"名前":"双連撃","分類":"攻撃","消費MP":"30","威力":"80","攻撃回数":"2",}
+skill_013 = {"名前":"自己再生","分類":"回復","消費MP":"500","威力":"30",}
+skill_014 = {"名前":"激昂","分類":"支援","消費MP":"100","威力":"50","対象":"攻撃力"}
+skill_015 = {"名前":"激突","分類":"攻撃","消費MP":"100","威力":"150","攻撃回数":"1",}
+skill_016 = {"名前":"重圧","分類":"特殊","消費MP":"100","威力":"50",}
+skill_017 = {"名前":"猛撃","分類":"攻撃","消費MP":"0","威力":"150","攻撃回数":"1",}
+skill_018 = {"名前":"瞬撃","分類":"攻撃","消費MP":"200","威力":"50","攻撃回数":"5",}
+skill_019 = {"名前":"毒撃","分類":"特殊","消費MP":"100","威力":"20",}
+skill_020 = {"名前":"五月雨斬り","分類":"攻撃","消費MP":"100","威力":"30","攻撃回数":"4",}
+skill_021 = {"名前":"振り下ろし","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"1",}
+skill_022 = {"名前":"滅多斬り","分類":"攻撃","消費MP":"2000","威力":"40","攻撃回数":"5",}
+skill_023 = {"名前":"硬化","分類":"支援","消費MP":"50","威力":"50","対象":"防御力"}
+skill_024 = {"名前":"無限斬り","分類":"攻撃","消費MP":"100000000","威力":"100","攻撃回数":"5",}
+skill_025 = {"名前":"盾撃・瞬","分類":"攻撃","消費MP":"200","威力":"120","攻撃回数":"1",}
+skill_026 = {"名前":"盾撃・剛","分類":"攻撃","消費MP":"500","威力":"200","攻撃回数":"1",}
+skill_027 = {"名前":"守の型","分類":"支援","消費MP":"200","威力":"30","対象":"防御力",}
+skill_028 = {"名前":"殴打","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"1",}
+skill_029 = {"名前":"突貫","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"1",}
+skill_030 = {"名前":"一閃突き","分類":"攻撃","消費MP":"300","威力":"150","攻撃回数":"1",}
+skill_031 = {"名前":"五月雨突き","分類":"攻撃","消費MP":"800","威力":"80","攻撃回数":"4",}
+skill_032 = {"名前":"攻の型","分類":"支援","消費MP":"200","威力":"100","対象":"攻撃力",}
+skill_033 = {"名前":"魔弾","分類":"攻撃","消費MP":"100","威力":"100","攻撃回数":"1",}
+skill_034 = {"名前":"氷魔弾","分類":"攻撃","消費MP":"500","威力":"150","攻撃回数":"1",}
+skill_035 = {"名前":"獄炎魔弾","分類":"攻撃","消費MP":"50000","威力":"350","攻撃回数":"1",}
+skill_036 = {"名前":"白銀之光・業","分類":"妨害","消費MP":"500","威力":"100","対象":"防御力",}
+skill_037 = {"名前":"白銀之光・廻","分類":"回復","消費MP":"5000","威力":"100",}
+skill_038 = {"名前":"白銀之光・判","分類":"攻撃","消費MP":"0","威力":"200","攻撃回数":"1",}
+skill_039 = {"名前":"骸骨剣術・瞬之型・極","分類":"攻撃","消費MP":"0","威力":"100","攻撃回数":"2",}
+skill_040 = {"名前":"骸骨剣術・重之型・極","分類":"攻撃","消費MP":"5000","威力":"350","攻撃回数":"1",}
+skill_041 = {"名前":"骸骨剣術・終之型・極","分類":"攻撃","消費MP":"50000","威力":"500","攻撃回数":"1",}
+skill_042 = {"名前":"流水の型","分類":"支援","消費MP":"2000","威力":"50","対象":"回避率",}
+skill_043 = {"名前":"没我一世","分類":"支援","消費MP":"5000","威力":"100","対象":"攻撃力"}
+
+ai_ = ["通常攻撃","弱攻撃","強攻撃","バフ","回復"]
+ai_000 = [skill_002,skill_024,skill_024,skill_024,skill_024]
+ai_001 = [skill_001,skill_010,skill_005,skill_006,skill_013]
+ai_002 = [skill_038,skill_003,skill_004,skill_036,skill_037]
+ai_003 = [skill_000,skill_000,skill_000,skill_000,skill_000]
+ai_004 = [skill_017,skill_018,skill_015,skill_014,skill_015]
+ai_005 = [skill_001,skill_019,skill_019,skill_019,skill_013]
+ai_006 = [skill_021,skill_012,skill_020,skill_032,skill_013]
+ai_007 = [skill_028,skill_025,skill_026,skill_027,skill_013]
+ai_008 = [skill_029,skill_030,skill_031,skill_032,skill_013]
+ai_009 = [skill_033,skill_034,skill_035,skill_032,skill_013]
+ai_010 = [skill_039,skill_040,skill_041,skill_043,skill_042]
+
+ai_matome =[ai_000,ai_001,ai_002,ai_003,ai_004,ai_005,ai_006,ai_007,ai_008,ai_009,ai_010]
+
+weapon_000 = {"名前":"不殺之剣","レベル":"0","武器攻撃力":"0","攻撃力倍率":"0","命中率":"100","会心率":"0","基礎武器攻撃力":"0","費用":"0"}
+weapon_001 = {"名前":"錆び折れた剣","レベル":"0","武器攻撃力":"5","攻撃力倍率":"5","命中率":"90","会心率":"0","基礎武器攻撃力":"5","費用":"50"}
+weapon_002 = {"名前":"折れた剣","レベル":"0","武器攻撃力":"20","攻撃力倍率":"10","命中率":"91","会心率":"1","基礎武器攻撃力":"20","費用":"100"}
+weapon_003 = {"名前":"錆びた剣","レベル":"0","武器攻撃力":"100","攻撃力倍率":"20","命中率":"92","会心率":"2","基礎武器攻撃力":"100","費用":"200"}
+weapon_004 = {"名前":"鈍鉄の剣","レベル":"0","武器攻撃力":"500","攻撃力倍率":"50","命中率":"93","会心率":"3","基礎武器攻撃力":"500","費用":"10000"}
+weapon_005 = {"名前":"純銅の剣","レベル":"0","武器攻撃力":"1000","攻撃力倍率":"60","命中率":"94","会心率":"5","基礎武器攻撃力":"1000","費用":"30000"}
+weapon_006 = {"名前":"聖銀の剣","レベル":"0","武器攻撃力":"5000","攻撃力倍率":"100","命中率":"96","会心率":"25","基礎武器攻撃力":"5000","費用":"100000"}
+weapon_007 = {"名前":"造金の剣","レベル":"0","武器攻撃力":"-500","攻撃力倍率":"-50","命中率":"97","会心率":"0","基礎武器攻撃力":"1","費用":"200000"}
+weapon_008 = {"名前":"玉鋼の剣","レベル":"0","武器攻撃力":"15000","攻撃力倍率":"250","命中率":"98","会心率":"30","基礎武器攻撃力":"15000","費用":"1000000"}
+weapon_009 = {"名前":"翼獅子の細剣","レベル":"0","武器攻撃力":"50000","攻撃力倍率":"300","命中率":"99","会心率":"50","基礎武器攻撃力":"50000","費用":"5000000"}
+weapon_010 = {"名前":"英雄の剣","レベル":"0","武器攻撃力":"50000000000000000","攻撃力倍率":"5000000000000000000","命中率":"200","会心率":"200","基礎武器攻撃力":"10000","費用":"1"}
+
+sin_666_1 = {"名前":"憤怒せし巨斧","武器攻撃力":"50000000","攻撃力倍率":"1000",}
+sin_666_2 = {"名前":"強欲なる短刀","武器攻撃力":"500000","攻撃力倍率":"100",}
+sin_666_3 = {"名前":"嫉妬せし蛇腹剣","武器攻撃力":"50000000","攻撃力倍率":"1000",}
+sin_666_4 = {"名前":"怠惰なる巨盾","武器攻撃力":"0","攻撃力倍率":"0",}
+sin_666_5 = {"名前":"暴食なる巨槌","武器攻撃力":"50000000","攻撃力倍率":"1000",}
+sin_666_6 = {"名前":"色欲なる双弓","武器攻撃力":"50000000","攻撃力倍率":"200",}
+sin_666_7 = {"名前":"傲慢なる大剣","武器攻撃力":"50000000","攻撃力倍率":"1000",}
+
+equip_001 = {"名前":"布の防具","レベル":"0","防具防御力":"100","ダメージカット率":"0","基礎防具防御力":"10","費用":"50"}
+equip_002 = {"名前":"皮の防具","レベル":"0","防具防御力":"200","ダメージカット率":"5","基礎防具防御力":"50","費用":"500"}
+equip_003 = {"名前":"錆びた防具","レベル":"0","防具防御力":"500","ダメージカット率":"10","基礎防具防御力":"500","費用":"1000"}
+equip_004 = {"名前":"鈍鉄の防具","レベル":"0","防具防御力":"2000","ダメージカット率":"25","基礎防具防御力":"1000","費用":"50000"}
+equip_005 = {"名前":"純銅の防具","レベル":"0","防具防御力":"4000","ダメージカット率":"30","基礎防具防御力":"2000","費用":"100000"}
+equip_006 = {"名前":"聖銀の防具","レベル":"0","防具防御力":"5000","ダメージカット率":"50","基礎防具防御力":"5000","費用":"500000"}
+equip_007 = {"名前":"造金の防具","レベル":"0","防具防御力":"-5000","ダメージカット率":"-50","基礎防具防御力":"1","費用":"1000000"}
+equip_008 = {"名前":"玉鋼の防具","レベル":"0","防具防御力":"15000","ダメージカット率":"70","基礎防具防御力":"15000","費用":"5000000"}
+equip_009 = {"名前":"翼獅子の防具","レベル":"0","防具防御力":"10000","ダメージカット率":"60","基礎防具防御力":"100000","費用":"50000000"}
+equip_010 = {"名前":"英雄の防具","レベル":"0","防具防御力":"500000000000000000","ダメージカット率":"99","基礎防具防御力":"5000000000000","費用":"50"}
+
+item_1 = {"名前":"傷薬","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"そこらに生えた薬効成分のある雑草をすりつぶして作られた薬。とても苦い。"}
+item_2 = {"名前":"レッドスライムの核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。宝石のような見た目であり、貴重な辛味なので、料理人に人気。しかし食べ過ぎると…?"}
+item_3 = {"名前":"グリーンスライムの核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。宝石のような見た目であり、リラックス効果のある香りを放っている。しかし食べ過ぎると…?"}
+item_4 = {"名前":"パープルスライムの核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。宝石のような見た目であり、独特な刺激が一部のマニアに人気。しかし食べ過ぎると…?"}
+item_5 = {"名前":"アイアンスライムの核","所持数":"0","効果":"投げると5～10ダメージを与える。","説明":"スライムの脳とも心臓とも呼べる部位。鉄の玉のような見た目であり、硬度も鉄と同様。武器として使える。"}
+item_6 = {"名前":"シルバースライムの核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。銀の玉のような見た目であり、硬度も鉄と同様。武器として使える。"}
+item_7 = {"名前":"ゴールデンスライムの核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。しかし食べ過ぎると…?"}
+item_8 = {"名前":"スライムキングの王核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。しかし食べ過ぎると…?"}
+item_9 = {"名前":"スライムキングの王核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。しかし食べ過ぎると…?"}
+item_10 = {"名前":"スライムキングの王核","所持数":"0","効果":"食べるとHPを5％回復する。","説明":"スライムの脳とも心臓とも呼べる部位。しかし食べ過ぎると…?"}
+
+def training():
+   global training_cost
+   hero["所持金"] = int(hero["所持金"]) - training_cost
+   training_rundom = random.randint(0,100)
+   if  0<= training_rundom <= 5:
+     training_1 = 3
+     training_2 = 5
+     print("超大成功！！！")
+   if  6 <= training_rundom <= 15: 
+     training_1 = 1.5
+     training_2 = 3
+     print("超成功！！")
+   if  16 <= training_rundom <= 30: 
+     training_1 = 3
+     training_2 = 2
+     print("大成功！")
+   if  31<= training_rundom <= 100:
+     training_1 = 2
+     training_2 = 1
+     print("成功！")
+   HP_UP  = int(int(hero_kiso["HP"]) * (100 + int(hero["レベル"]))//100 * training_2)
+   MP_UP  = int(int(hero_kiso["MP"]) * (100 + int(hero["レベル"]))//100 * training_2)
+   ATK_UP = int(int(hero_kiso["攻撃力"]) * (100 + int(hero["レベル"]))//100 * training_2)
+   DEF_UP = int(int(hero_kiso["防御力"]) * (100 + int(hero["レベル"]))//100 * training_2)
+   SPD_UP = int(int(hero_kiso["防御力"]) * (100 + int(hero["レベル"]))//100 * training_2)
+   hero["最大HP"] = int(hero["最大HP"]) + int(HP_UP)
+   hero["最大MP"] = int(hero["最大MP"]) + int(MP_UP)
+   hero["攻撃力"] = int(hero["攻撃力"]) + int(ATK_UP)
+   hero["防御力"] = int(hero["防御力"]) + int(DEF_UP)
+   hero["素早さ"] = int(hero["素早さ"]) + int(SPD_UP)   
+   print("HPが"+str(HP_UP)+"上がった！")
+   print("MPが"+str(MP_UP)+"上がった！")
+   print("攻撃力が"+str(ATK_UP)+"上がった！")
+   print("防御力が"+str(DEF_UP)+"上がった！")
+   print("素早さが"+str(SPD_UP)+"上がった！")
+   print("")
+   training_cost = training_cost + 20 * int(hero["レベル"])
+
+def soubiya():
+   print("装備屋のおじさん「…何の用だ？」")
+   while True:
+       print("1:武器を買いたい")
+       print("2:防具を買いたい")
+       print("3:武器を強化したい")
+       print("4:防具を強化したい")
+       print("5:店を出る")
+       soubiya_choice = input()
+       print("所持金"+str(hero["所持金"])+"G")
+       sleep(1)
+       if int(soubiya_choice) == 1:
+        buy_ok = 0
+        if int(weapon_flag["2"]) == 0:
+         print("2:"+str(weapon_002["名前"])+str(weapon_002["費用"])+"G")
+        if int(weapon_flag["3"]) == 0:
+         print("3:"+str(weapon_003["名前"])+str(weapon_003["費用"])+"G")
+        if int(weapon_flag["4"]) == 0:
+         print("4:"+str(weapon_004["名前"])+str(weapon_004["費用"])+"G")
+        if int(weapon_flag["5"]) == 0:
+         print("5:"+str(weapon_005["名前"])+str(weapon_005["費用"])+"G")
+        if int(weapon_flag["6"]) == 0:
+         print("6:"+str(weapon_006["名前"])+str(weapon_006["費用"])+"G")
+        if int(weapon_flag["7"]) == 0:
+         print("7:"+str(weapon_007["名前"])+str(weapon_007["費用"])+"G")
+        if int(weapon_flag["8"]) == 0:
+         print("8:"+str(weapon_008["名前"])+str(weapon_008["費用"])+"G")
+        if int(weapon_flag["9"]) == 0:
+         print("9:"+str(weapon_009["名前"])+str(weapon_009["費用"])+"G")
+        print("10:欲しいものはない")
+        soubiya_buki_choice = input("…どれが欲しいんだ？")
+        sleep(1)
+        if int(soubiya_buki_choice) == 2 and int(weapon_flag["2"]) == 0 and int(hero["所持金"]) >= int(weapon_002["費用"]):
+          buy_weapon = weapon_002
+          weapon_flag["2"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 3 and int(weapon_flag["3"]) == 0 and int(hero["所持金"]) >= int(weapon_003["費用"]):
+          buy_weapon = weapon_003
+          weapon_flag["3"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 4 and int(weapon_flag["4"]) == 0 and int(hero["所持金"]) >= int(weapon_004["費用"]):
+          buy_weapon = weapon_004
+          weapon_flag["4"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 5 and int(weapon_flag["5"]) == 0 and int(hero["所持金"]) >= int(weapon_005["費用"]):
+          buy_weapon = weapon_005
+          weapon_flag["5"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 6 and int(weapon_flag["6"]) == 0 and int(hero["所持金"]) >= int(weapon_006["費用"]):
+          buy_weapon = weapon_006
+          weapon_flag["6"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 7 and int(weapon_flag["7"]) == 0 and int(hero["所持金"]) >= int(weapon_007["費用"]):
+          buy_weapon = weapon_007
+          weapon_flag["7"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 8 and int(weapon_flag["8"]) == 0 and int(hero["所持金"]) >= int(weapon_008["費用"]):
+          buy_weapon = weapon_008
+          weapon_flag["8"] = 1
+          buy_ok = 1
+        elif int(soubiya_buki_choice) == 9 and int(weapon_flag["9"]) == 0 and int(hero["所持金"]) >= int(weapon_009["費用"]):
+          buy_weapon = weapon_009
+          weapon_flag["9"] = 1
+          buy_ok = 1
+        if int(buy_ok) == 1:
+          hero["所持金"] = int(hero["所持金"]) - int(buy_weapon["費用"])
+          print("…毎度")
+        else:
+          print("…金貯めて出直してこい")
+        if int(soubiya_buki_choice) == 10:
+          print("…冷やかしなら帰んな")
+       if int(soubiya_choice) == 2:
+        buy_ok = 0
+        if int(equip_flag["2"]) == 0:
+         print("2:"+str(equip_002["名前"])+str(equip_002["費用"])+"G")
+        if int(equip_flag["3"]) == 0:
+         print("3:"+str(equip_003["名前"])+str(equip_003["費用"])+"G")
+        if int(equip_flag["4"]) == 0:
+         print("4:"+str(equip_004["名前"])+str(equip_004["費用"])+"G")
+        if int(equip_flag["5"]) == 0:
+         print("5:"+str(equip_005["名前"])+str(equip_005["費用"])+"G")
+        if int(equip_flag["6"]) == 0:
+         print("6:"+str(equip_006["名前"])+str(equip_006["費用"])+"G")
+        if int(equip_flag["7"]) == 0:
+         print("7:"+str(equip_007["名前"])+str(equip_007["費用"])+"G")
+        if int(equip_flag["8"]) == 0:
+         print("8:"+str(equip_008["名前"])+str(equip_008["費用"])+"G")
+        if int(equip_flag["9"]) == 0:
+         print("9:"+str(equip_009["名前"])+str(equip_009["費用"])+"G")
+        print("10:欲しいものはない")
+        soubiya_bougu_choice = input("…どれが欲しいんだ？")
+        sleep(1)
+        if int(soubiya_bougu_choice) == 2 and int(equip_flag["2"]) == 0 and int(hero["所持金"]) >= int(equip_002["費用"]):
+          buy_equip = equip_002
+          equip_flag["2"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 3 and int(equip_flag["3"]) == 0 and int(hero["所持金"]) >= int(equip_003["費用"]):
+          buy_equip = equip_003
+          equip_flag["3"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 4 and int(equip_flag["4"]) == 0 and int(hero["所持金"]) >= int(equip_004["費用"]):
+          buy_equip = equip_004
+          equip_flag["4"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 5 and int(equip_flag["5"]) == 0 and int(hero["所持金"]) >= int(equip_005["費用"]):
+          buy_equip = equip_005
+          equip_flag["5"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 6 and int(equip_flag["6"]) == 0 and int(hero["所持金"]) >= int(equip_006["費用"]):
+          buy_equip = equip_006
+          equip_flag["6"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 7 and int(equip_flag["7"]) == 0 and int(hero["所持金"]) >= int(equip_007["費用"]):
+          buy_equip = equip_007
+          equip_flag["7"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 8 and int(equip_flag["8"]) == 0 and int(hero["所持金"]) >= int(equip_008["費用"]):
+          buy_equip = equip_008
+          equip_flag["8"] = 1
+          buy_ok = 1
+        elif int(soubiya_bougu_choice) == 9 and int(equip_flag["9"]) == 0 and int(hero["所持金"]) >= int(equip_009["費用"]):
+          buy_equip = equip_009
+          equip_flag["9"] = 1
+          buy_ok = 1
+        if int(buy_ok) == 1:
+          hero["所持金"] = int(hero["所持金"]) - int(buy_equip["費用"])
+          print("…毎度")
+        else:
+          print("…金貯めて出直してこい")
+        if int(soubiya_bougu_choice) == 10:
+          print("…冷やかしなら帰んな")
+       if int(soubiya_choice) == 3:
+         print("…どの武器を何回強化するんだ？")
+         if int(weapon_flag["1"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_001["費用"])
+           print("1:"+str(weapon_001["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["2"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_002["費用"])
+           print("2:"+str(weapon_002["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["3"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_003["費用"])
+           print("3:"+str(weapon_003["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["4"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_004["費用"])
+           print("4:"+str(weapon_004["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["5"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_005["費用"])
+           print("5:"+str(weapon_005["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["6"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_006["費用"])
+           print("6:"+str(weapon_006["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["7"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_007["費用"])
+           print("7:"+str(weapon_007["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["8"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_008["費用"])
+           print("8:"+str(weapon_008["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["9"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_009["費用"])
+           print("9:"+str(weapon_009["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(weapon_flag["10"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(weapon_010["費用"])
+           print("10:"+str(weapon_010["名前"])+" 最大強化回数"+str(max_kyouka))
+         kyouka_weapon = int(input("装備の番号を選択してください"))
+         kyouka_kaisuu = int(input("強化回数を入力してください(一回での最大強化回数は、1000万までです)"))
+         if kyouka_kaisuu >= 10000000:
+           kyouka_kaisuu = 10000000
+         if kyouka_weapon == 1 and int(weapon_flag["1"]) ==1 and int(hero["所持金"]) >= (int(weapon_001["費用"]) * int(kyouka_kaisuu)):
+            hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+            kyouka_weapon_2 = weapon_001
+         elif kyouka_weapon == 2 and int(weapon_flag["2"]) ==1 and int(hero["所持金"])>= (int(weapon_002["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_002["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_002
+         elif kyouka_weapon == 3 and int(weapon_flag["3"]) ==1 and int(hero["所持金"])>= (int(weapon_003["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_003
+         elif kyouka_weapon == 4 and int(weapon_flag["4"]) ==1 and int(hero["所持金"])>= (int(weapon_004["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_004
+         elif kyouka_weapon == 5 and int(weapon_flag["5"]) ==1 and int(hero["所持金"])>= (int(weapon_005["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_005
+         elif kyouka_weapon == 6 and int(weapon_flag["6"]) ==1 and int(hero["所持金"])>= (int(weapon_006["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_006
+         elif kyouka_weapon == 7 and int(weapon_flag["7"]) ==1 and int(hero["所持金"])>= (int(weapon_007["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_007
+         elif kyouka_weapon == 8 and int(weapon_flag["8"]) ==1 and int(hero["所持金"])>= (int(weapon_008["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_008
+         elif kyouka_weapon == 9 and int(weapon_flag["9"]) ==1 and int(hero["所持金"])>= (int(weapon_009["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_009
+         elif kyouka_weapon == 10 and int(weapon_flag["10"]) ==1 and int(hero["所持金"])>= (int(weapon_010["費用"]) * int(kyouka_kaisuu)):
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) * int(kyouka_kaisuu)
+           kyouka_weapon_2 = weapon_010
+         else:
+           hero["所持金"] = int(hero["所持金"]) - int(weapon_001["費用"]) 
+           kyouka_weapon_2 = weapon_001
+         for i in range(kyouka_kaisuu):
+          kyouka_weapon_2["レベル"] = int(kyouka_weapon_2["レベル"]) + 1
+          if int(kyouka_weapon_2["レベル"]) %100 == 1:
+            kyouka_weapon_2["基礎武器攻撃力"] = int(kyouka_weapon_2["基礎武器攻撃力"]) +1
+          if int(kyouka_weapon_2["レベル"]) %1000 == 1:
+            kyouka_weapon_2["攻撃力倍率"] = int(kyouka_weapon_2["攻撃力倍率"]) + 1
+          if int(kyouka_weapon_2["レベル"]) %10000 == 1:
+            kyouka_weapon_2["攻撃力倍率"] = int(kyouka_weapon_2["攻撃力倍率"]) + 10
+            kyouka_weapon_2["命中率"] = int(kyouka_weapon_2["命中率"]) + 5
+            kyouka_weapon_2["会心率"] = int(kyouka_weapon_2["会心率"]) + 2
+         kyouka_weapon_2["武器攻撃力"] = int(kyouka_weapon_2["レベル"]) * int(kyouka_weapon_2["基礎武器攻撃力"])
+         print(str(kyouka_weapon_2["名前"])+"のレベルが"+str(kyouka_weapon_2["レベル"])+"に上がった！")
+         print("武器攻撃力が"+str(kyouka_weapon_2["武器攻撃力"])+"に上がった！")
+         print("攻撃力倍率が"+str(kyouka_weapon_2["攻撃力倍率"])+"に上がった！")
+         print("命中率が"+str(kyouka_weapon_2["命中率"])+"に上がった！")
+         print("会心率が"+str(kyouka_weapon_2["会心率"])+"に上がった！")
+       if int(soubiya_choice) == 4:
+         print("…どの防具を何回強化するんだ？")
+         if int(equip_flag["1"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_001["費用"])
+           print("1:"+str(equip_001["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["2"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_002["費用"])
+           print("2:"+str(equip_002["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["3"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_003["費用"])
+           print("3:"+str(equip_003["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["4"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_004["費用"])
+           print("4:"+str(equip_004["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["5"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_005["費用"])
+           print("5:"+str(equip_005["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["6"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_006["費用"])
+           print("6:"+str(equip_006["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["7"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_007["費用"])
+           print("7:"+str(equip_007["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["8"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_008["費用"])
+           print("8:"+str(equip_008["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["9"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_009["費用"])
+           print("9:"+str(equip_009["名前"])+" 最大強化回数"+str(max_kyouka))
+         if int(equip_flag["10"]) == 1:
+           max_kyouka = int(hero["所持金"])// int(equip_010["費用"])
+           print("10:"+str(equip_010["名前"])+" 最大強化回数"+str(max_kyouka))
+         kyouka_equip = int(input("装備の番号を選択してください"))
+         kyouka_kaisuu = int(input("強化回数を入力してください(一回での最大強化回数は、1000万までです)"))
+         if kyouka_kaisuu >= 10000000:
+           kyouka_kaisuu = 10000000
+         if kyouka_equip == 1 and int(equip_flag["1"]) ==1 and int(hero["所持金"]) >= (int(equip_001["費用"]) * int(kyouka_kaisuu)):
+            hero["所持金"] = int(hero["所持金"]) - (int(equip_001["費用"]) * int(kyouka_kaisuu))
+            kyouka_equip_2 = equip_001
+         if kyouka_equip == 2 and int(equip_flag["2"]) ==1 and int(hero["所持金"])>= (int(equip_002["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_002["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_002
+         if kyouka_equip == 3 and int(equip_flag["3"]) ==1 and int(hero["所持金"])>= (int(equip_003["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_003["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_003
+         if kyouka_equip == 4 and int(equip_flag["4"]) ==1 and int(hero["所持金"])>= (int(equip_004["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_004["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_004
+         if kyouka_equip == 5 and int(equip_flag["5"]) ==1 and int(hero["所持金"])>= (int(equip_005["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_005["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_005
+         if kyouka_equip == 6 and int(equip_flag["6"]) ==1 and int(hero["所持金"])>= (int(equip_006["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_006["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_006
+         if kyouka_equip == 7 and int(equip_flag["7"]) ==1 and int(hero["所持金"])>= (int(equip_007["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_007["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_007
+         if kyouka_equip == 8 and int(equip_flag["8"]) ==1 and int(hero["所持金"])>= (int(equip_008["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_008["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_008
+         if kyouka_equip == 9 and int(equip_flag["9"]) ==1 and int(hero["所持金"])>= (int(equip_009["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_009["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_009
+         if kyouka_equip == 10 and int(equip_flag["10"]) ==1 and int(hero["所持金"])>= (int(equip_010["費用"]) * kyouka_kaisuu):
+           hero["所持金"] = int(hero["所持金"]) - int(equip_010["費用"]) * kyouka_kaisuu
+           kyouka_equip_2 = equip_010
+         for i in range(kyouka_kaisuu):
+          kyouka_equip_2["レベル"] = int(kyouka_equip_2["レベル"]) + 1
+          if int(kyouka_equip_2["レベル"]) %100 == 1:
+            kyouka_equip_2["基礎防具防御力"] = int(kyouka_equip_2["基礎防具防御力"]) + 5
+          if int(kyouka_equip_2["レベル"]) %10000 == 1:
+            kyouka_equip_2["ダメージカット率"] = int(kyouka_equip_2["ダメージカット率"]) + 1
+         if int(kyouka_equip_2["ダメージカット率"]) > 99:
+            kyouka_equip_2["ダメージカット率"] = 99
+         kyouka_equip_2["防具防御力"] = int(kyouka_equip_2["レベル"]) * int(kyouka_equip_2["基礎防具防御力"])
+         print(str(kyouka_equip_2["名前"])+"は、レベルが"+str(kyouka_equip_2["レベル"])+"に上がった！")
+         print("防具防御力が"+str(kyouka_equip_2["防具防御力"])+"に上がった！")
+         print("ダメージカット率が"+str(kyouka_equip_2["ダメージカット率"])+"に上がった！")
+       if int(soubiya_choice) == 5:
+         break
+
+def item():
+ while True:
+  print("何を確認しますか？")
+  print("1:アイテム")
+  print("2:武器")
+  print("3:防具")
+  print("4:終わる")
+  item_comand = int(input())
+  if item_comand == 1:
+    if int(item_1["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_1["所持数"]))
+    if int(item_2["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_2["所持数"]))
+    if int(item_3["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_3["所持数"]))
+    if int(item_4["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_4["所持数"]))
+    if int(item_5["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_5["所持数"]))
+    if int(item_6["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_6["所持数"]))
+    if int(item_7["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_7["所持数"]))
+    if int(item_8["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_8["所持数"]))
+    if int(item_9["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_9["所持数"]))
+    if int(item_10["所持数"]) > 0:
+      print("1:"+str(item_1["名前"])+ "所持数:"+str(item_10["所持数"]))
+    print("どれを使用しますか？")
+    item_use_choice = int(input())
+    sleep(1)
+    if item_use_choice == 1 and int(item_1["所持数"]) > 0:
+      heel_HP = (int(hero["最大HP"]) //100) * 5
+      hero["現在HP"] = hero["現在HP"] + heel_HP
+      item_1["所持数"] = item_1["所持数"] - 1
+      print("HPが"+str(heel_HP)+"回復した！")
+    if item_use_choice == 2 and int(item_1["所持数"]) > 0:
+     item_use = item_2
+    if item_use_choice == 3 and int(item_1["所持数"]) > 0:
+     item_use = item_3
+    if item_use_choice == 4 and int(item_1["所持数"]) > 0:
+     item_use = item_4
+    if item_use_choice == 5 and int(item_1["所持数"]) > 0:
+     item_use = item_5
+    if item_use_choice == 6 and int(item_1["所持数"]) > 0:
+     item_use = item_6
+    if item_use_choice == 7 and int(item_1["所持数"]) > 0:
+     item_use = item_7
+    if item_use_choice == 8 and int(item_1["所持数"]) > 0:
+     item_use = item_8
+    if item_use_choice == 9 and int(item_1["所持数"]) > 0:
+     item_use = item_9
+    if item_use_choice == 10 and int(item_1["所持数"]) > 0:
+     item_use = item_10
+  if item_comand == 2:
+    if int(weapon_flag["0"]) == 1:
+      print("0:"+str(weapon_000))
+    if int(weapon_flag["1"]) == 1:
+      print("1:"+str(weapon_001))
+    if int(weapon_flag["2"]) == 1:
+      print("2:"+str(weapon_002))
+    if int(weapon_flag["3"]) == 1:
+      print("3:"+str(weapon_003))
+    if int(weapon_flag["4"]) == 1:
+      print("4:"+str(weapon_004))
+    if int(weapon_flag["5"]) == 1:
+      print("5:"+str(weapon_005))
+    if int(weapon_flag["6"]) == 1:
+      print("6:"+str(weapon_006))
+    if int(weapon_flag["7"]) == 1:
+      print("7:"+str(weapon_007))
+    if int(weapon_flag["8"]) == 1:
+      print("8:"+str(weapon_008))
+    if int(weapon_flag["9"]) == 1:
+      print("9:"+str(weapon_009))
+    if int(weapon_flag["10"]) == 1:
+      print("10:"+str(weapon_010))
+    print("どれを装備しますか？")
+    weapon_E_choice = int(input())
+    sleep(1)
+    if weapon_E_choice == 0 and int(weapon_flag["0"]) == 1:
+     weapon_E = weapon_000
+    elif weapon_E_choice == 1 and int(weapon_flag["1"]) == 1:
+     weapon_E = weapon_001
+    elif weapon_E_choice == 2 and int(weapon_flag["2"]) == 1:
+     weapon_E = weapon_002
+    elif weapon_E_choice == 3 and int(weapon_flag["3"]) == 1:
+     weapon_E = weapon_003
+    elif weapon_E_choice == 4 and int(weapon_flag["4"]) == 1:
+     weapon_E = weapon_004
+    elif weapon_E_choice == 5 and int(weapon_flag["5"]) == 1:
+     weapon_E = weapon_005
+    elif weapon_E_choice == 6 and int(weapon_flag["6"]) == 1:
+     weapon_E = weapon_006
+    elif weapon_E_choice == 7 and int(weapon_flag["7"]) == 1:
+     weapon_E = weapon_007
+    elif weapon_E_choice == 8 and int(weapon_flag["8"]) == 1:
+     weapon_E = weapon_008
+    elif weapon_E_choice == 9 and int(weapon_flag["9"]) == 1:
+     weapon_E = weapon_009
+    elif weapon_E_choice == 10 and int(weapon_flag["10"]) == 1:
+     weapon_E = weapon_010
+    else:
+      weapon_E = weapon_001
+    hero["装備武器"] = weapon_E["名前"]
+    hero["武器攻撃力"] = weapon_E["武器攻撃力"]
+    hero["攻撃力倍率"] = weapon_E["攻撃力倍率"]
+    hero["命中率"] = weapon_E["命中率"]
+    hero["会心率"] = weapon_E["会心率"]
+    print(str(weapon_E["名前"]+"を装備した！"))
+    print("武器攻撃力が"+str(weapon_E["武器攻撃力"])+"になった！")
+    print("攻撃力倍率が"+str(weapon_E["攻撃力倍率"])+"になった！")
+    print("命中率が"+str(weapon_E["命中率"])+"になった！")
+    print("会心率が"+str(weapon_E["会心率"])+"になった！")
+    print("")
+  if item_comand == 3:
+    if int(equip_flag["1"]) == 1:
+      print("1:"+str(equip_001))
+    if int(equip_flag["2"]) == 1:
+      print("2:"+str(equip_002))
+    if int(equip_flag["3"]) == 1:
+      print("3:"+str(equip_003))
+    if int(equip_flag["4"]) == 1:
+      print("4:"+str(equip_004))
+    if int(equip_flag["5"]) == 1:
+      print("5:"+str(equip_005))
+    if int(equip_flag["6"]) == 1:
+      print("6:"+str(equip_006))
+    if int(equip_flag["7"]) == 1:
+      print("7:"+str(equip_007))
+    if int(equip_flag["8"]) == 1:
+      print("8:"+str(equip_008))
+    if int(equip_flag["9"]) == 1:
+      print("9:"+str(equip_009))
+    if int(equip_flag["10"]) == 1:
+      print("10:"+str(equip_010))
+    print("どれを装備しますか？")
+    equip_E_choice = int(input())
+    sleep(1)
+    if equip_E_choice == 1 and int(equip_flag["1"]) == 1:
+     equip_E = equip_001
+    elif equip_E_choice == 2 and int(equip_flag["2"]) == 1:
+     equip_E = equip_002
+    elif equip_E_choice == 3 and int(equip_flag["3"]) == 1:
+     equip_E = equip_003
+    elif equip_E_choice == 4 and int(equip_flag["4"]) == 1:
+     equip_E = equip_004
+    elif equip_E_choice == 5 and int(equip_flag["5"]) == 1:
+     equip_E = equip_005
+    elif equip_E_choice == 6 and int(equip_flag["6"]) == 1:
+     equip_E = equip_006
+    elif equip_E_choice == 7 and int(equip_flag["7"]) == 1:
+     equip_E = equip_007
+    elif equip_E_choice == 8 and int(equip_flag["8"]) == 1:
+     equip_E = equip_008
+    elif equip_E_choice == 9 and int(equip_flag["9"]) == 1:
+     equip_E = equip_009
+    elif equip_E_choice == 10 and int(equip_flag["10"]) == 1:
+     equip_E = equip_010
+    else:
+      equip_E = equip_001
+    hero["装備防具"] = equip_E["名前"]
+    hero["防具防御力"] = equip_E["防具防御力"]
+    hero["ダメージカット率"] = equip_E["ダメージカット率"]
+    print(str(equip_E["名前"]+"を装備した！"))
+    print("防具防御力が"+str(equip_E["防具防御力"])+"になった！")
+    print("ダメージカット率が"+str(equip_E["ダメージカット率"])+"になった！")
+    print("")
+  if item_comand == 4:
+    print()
+    break
+
+def skill():
+     global tujyou_atk
+     global hero_use_skill
+     HERO_ATK = (int(hero["攻撃力"])+int(hero["武器攻撃力"])) * (100+int(hero["攻撃力倍率"]))/100 * (100 + int(hero_buff["攻撃力"]))/100 * (100 - int(hero_debuff["攻撃力"]))/100 
+     meityu_random_hero    = random.randint(1,100)
+     kaihi_random_enemy  = random.randint(1,100)
+     kaisin_random_hero    = random.randint(1,100)
+     hero_goukei_damege    = 0
+     if tujyou_atk == 0:
+       print("何を使用しますか？")
+       if skill_flag["1"] == "0":
+         print("1:"+str(skill_006))
+       if skill_flag["2"] == "0":
+         print("2:"+str(skill_012))
+       skill_choice = input()
+       if int(skill_choice) == 1:
+          hero_use_skill = skill_006
+       if int(skill_choice) == 2:
+          hero_use_skill = skill_012
+     if hero["現在MP"] >= int(hero_use_skill["消費MP"]):
+       if hero_use_skill["分類"] == "攻撃":
+        hero["現在MP"] = int(hero["現在MP"]) - int(hero_use_skill["消費MP"])
+        print(str(hero["名前"])+"の"+str(hero_use_skill["名前"])+"!")
+        print("")
+        hero_damege = int(((int(HERO_ATK)- int(enemy_1["防御力"])) * int(hero_use_skill["威力"])/100) * (100-int(enemy_1["ダメージカット率"]))/100)
+        hero_kaisin_damege = int(int(HERO_ATK) * int(hero_use_skill["威力"])/100 * int(hero["会心倍率"]))
+        for h in range(int(hero_use_skill["攻撃回数"])):
+         meityu_random_hero    = random.randint(1,100)
+         kaihi_random_enemy  = random.randint(1,100)
+         kaisin_random_hero    = random.randint(1,100)
+         if int(hero_damege) <= 0:
+           hero_damege = int(hero["レベル"])
+         if meityu_random_hero <= int(hero["命中率"]) and kaihi_random_enemy > int(hero["回避率"]):
+          if kaisin_random_hero <= int(hero["会心率"]):
+           enemy_1["現在HP"] = int(enemy_1["現在HP"]) - int(hero_kaisin_damege) 
+           print("クリティカル！")
+           print(str(hero_kaisin_damege)+"ダメージ！")
+           hero_goukei_damege = int(hero_goukei_damege) + int(hero_kaisin_damege) 
+          else:
+           enemy_1["現在HP"] = int(enemy_1["現在HP"]) - int(hero_damege)
+           print(str(hero_damege)+"ダメージ！")
+           hero_goukei_damege = int(hero_goukei_damege) + int(hero_damege) 
+         else:
+          print(str(enemy_1["名前"])+"は攻撃を回避した！") 
+        print(str(hero["名前"])+"は合計"+str(hero_goukei_damege)+"のダメージを与えた！")
+        if int(enemy_1["現在HP"]) < 0:
+            enemy_1["現在HP"] = 0
+        print(str(enemy_1["名前"])+"の現在HPは"+str(enemy_1["現在HP"])+"です！")
+        print("")
+       elif hero_use_skill["分類"] == "支援":
+        hero["現在MP"] = int(hero["現在MP"]) - int(hero_use_skill["消費MP"])
+        taisyou = hero_use_skill["対象"]
+        hero_buff[taisyou] = int(hero_buff[taisyou]) + int(hero_use_skill["威力"])
+        print(str(hero["名前"])+"の"+str(hero_use_skill["名前"])+"!")
+        print(str(hero["名前"])+"の"+str(taisyou)+"が"+str(hero_use_skill["威力"])+"%上がった！")
+       elif hero_use_skill["分類"] == "回復":
+        hero["現在MP"] = int(hero["現在MP"]) - int(hero_use_skill["消費MP"])
+        heel_HP = (int(hero["最大HP"]) //100) * int(hero_use_skill["威力"])
+        hero["現在HP"] = hero["現在HP"] + heel_HP
+        print(str(hero["名前"])+"の"+str(hero_use_skill["名前"])+"!")
+        print(str(hero["名前"])+"のHPが"+str(heel_HP)+"回復した！")
+     else:
+       print("MPが足りない！")
+
+def enemy_turn():
+    global boss_syokai
+    global tousou
+    global enemy
+    enemy_AI = ai_matome[int(enemy_1["AI"])]
+    HERO_DEF = (int(hero["防御力"])+ int(hero["防具防御力"])) * (100 + int(hero_buff["防御力"]))/100 * (100 - int(hero_debuff["防御力"]))/100
+    kaihi_random_hero     = random.randint(1,100)
+    meityu_random_enemy   = random.randint(1,100)
+    kaisin_random_enemy   = random.randint(1,100)
+    enemy_goukei_damege   = 0
+    ENEMY_ATK     = int(enemy_1["攻撃力"])
+    enemy_use_skill = enemy_AI[2]
+    enemy_damege = (int(ENEMY_ATK) - int(HERO_DEF)) * int(enemy_use_skill["威力"])/100 * (100-int(hero["ダメージカット率"]))/100
+    if int(boss_syokai) == 0 and int(enemy_1["ボス"]) == 1:
+      enemy_use_skill = skill_016
+      boss_syokai = 1
+    elif int(enemy_1["現在HP"]) <= int(enemy_1["最大HP"]) * 0.5:
+      enemy_use_skill = enemy_AI[4]
+    elif int(enemy_damege) <= 0:
+      enemy_use_skill = enemy_AI[3]
+      if int(enemy_1["現在MP"]) <= int(enemy_use_skill["消費MP"]):
+        enemy_use_skill = enemy_AI[2]
+        if int(enemy_1["現在MP"]) <= int(enemy_use_skill["消費MP"]):
+          enemy_use_skill = enemy_AI[1]
+          if int(enemy_1["現在MP"]) <= int(enemy_use_skill["消費MP"]):
+            enemy_use_skill = enemy_AI[0]
+    elif int(enemy_1["現在MP"]) <= int(enemy_use_skill["消費MP"]):
+      enemy_use_skill = enemy_AI[1]
+      if int(enemy_1["現在MP"]) <= int(enemy_use_skill["消費MP"]):
+        enemy_use_skill = enemy_AI[0]
+    if enemy_1["現在MP"] >= int(enemy_use_skill["消費MP"]):
+       enemy_1["現在MP"] = int(enemy_1["現在MP"]) - int(enemy_use_skill["消費MP"])
+       if enemy_use_skill["分類"] == "特殊":
+            if enemy_use_skill["名前"] == "逃走":
+              tousou = 1
+            elif enemy_use_skill["名前"] == "毒撃":
+              hero_ijyou["毒"] = int(hero_ijyou["毒"]) + int(enemy_use_skill["威力"])
+              print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+              print(str(hero["名前"])+"は"+str(enemy_use_skill["威力"])+"の毒を受けた!")
+            elif enemy_use_skill["名前"] == "重圧":
+              print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+              print(str(hero["名前"])+"の攻撃力・防御力・素早さが"+str(enemy_use_skill["威力"])+"%低下した!")
+              for key in hero_debuff:
+                hero_debuff[key] = int(hero_debuff[key]) + int(enemy_use_skill["威力"])
+       elif enemy_use_skill["分類"] == "攻撃":
+        print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+        for j in range(int(enemy_use_skill["攻撃回数"])):
+         kaihi_random_hero     = random.randint(1,100)
+         meityu_random_enemy   = random.randint(1,100)
+         kaisin_random_enemy   = random.randint(1,100)
+         enemy_damege = int(int(enemy_1["レベル"]) + (int(ENEMY_ATK)  - int(HERO_DEF)) * int(enemy_use_skill["威力"])/100  * (100-int(hero["ダメージカット率"]))/100)
+         enemy_kaisin_damege = int(int(ENEMY_ATK) * int(enemy_use_skill["威力"])/100 * int(enemy_1["会心倍率"]))
+         if int(enemy_damege) < 0:
+           enemy_damege = int(enemy_1["レベル"])
+         if meityu_random_enemy <= int(enemy_1["命中率"]) and kaihi_random_hero > int(hero["回避率"]):
+          if kaisin_random_enemy <= int(enemy_1["会心率"]):
+           hero["現在HP"] = int(hero["現在HP"]) - int(enemy_kaisin_damege)
+           enemy_goukei_damege = int(enemy_goukei_damege) + int(enemy_kaisin_damege)
+           print("ファンブル！")
+           print(str(enemy_kaisin_damege)+"ダメージ！")
+           if int(hero["現在HP"]) < 0:
+            hero["現在HP"] = 0
+          else:
+           hero["現在HP"] = int(hero["現在HP"]) - int(enemy_damege)
+           enemy_goukei_damege = int(enemy_goukei_damege) + int(enemy_damege)
+           print(str(enemy_damege)+"ダメージ！")
+           if int(hero["現在HP"]) < 0:
+            hero["現在HP"] = 0
+         else:
+          print(str(hero["名前"])+"は攻撃を回避した！") 
+        if int(enemy_goukei_damege) > 0:
+         print(str(hero["名前"])+"は合計"+str(enemy_goukei_damege)+"のダメージを受けた！")
+         print(str(hero["名前"])+"の現在HPは"+str(hero["現在HP"])+"です！")
+        print("")
+       elif enemy_use_skill["分類"] == "支援":
+        taisyou = enemy_use_skill["対象"]
+        enemy_1[taisyou] = int(enemy_1[taisyou]) * (100 + int(enemy_use_skill["威力"]))/100
+        print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+        print(str(enemy_1["名前"])+"の"+str(taisyou)+"が"+str(enemy_use_skill["威力"])+"%上がった！")
+        print("")
+       elif enemy_use_skill["分類"] == "妨害":
+        taisyou = enemy_use_skill["対象"]
+        hero_debuff[taisyou] = int(enemy_use_skill["威力"])/100
+        print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+        print(str(hero["名前"])+"の"+str(taisyou)+"が"+str(enemy_use_skill["威力"])+"%下がった！")
+        print("")
+       elif enemy_use_skill["分類"] == "回復":
+        heel_HP = (int(enemy_1["最大HP"]) //100) * int(enemy_use_skill["威力"])
+        enemy_1["現在HP"] = enemy_1["現在HP"] + heel_HP
+        print(str(enemy_1["名前"])+"の"+str(enemy_use_skill["名前"])+"!")
+        print(str(enemy_1["名前"])+"のHPが"+str(heel_HP)+"回復した！")
+        print("")
+    else:
+       print(str(enemy_1["名前"])+"は"+str(enemy_use_skill["名前"])+"を発動しようとしたが、MPが足りなかった！")
+       print("")
+
+def pay():
+ print("あなたの所持金は"+str(hero["所持金"])+"です")
+ global sulot_pay
+ global kaisuu
+ sulot_pay = input("いくら賭けますか？")
+ sleep(1)
+ kaisuu = input("何回しますか？")
+ sleep(1)
+def score():
+ global sulot_pay
+ global sulot_x
+ global sulot_y
+ global sulot_z
+ for count in range(1):
+  if sulot_x == sulot_y == sulot_z == 0 or sulot_x == sulot_z != sulot_y and sulot_x == sulot_z == 0 :
+    hero["所持金"] += int(sulot_pay) * 7
+  if sulot_x == sulot_y == sulot_z != 0 or sulot_x == sulot_z != sulot_y and sulot_x == sulot_z != 0 :
+    hero["所持金"] += int(sulot_pay) * 2
+  if sulot_x != sulot_z :
+    hero["所持金"] -= int(sulot_pay)
+def sulot():
+ sulot_1 = ["⑦","BAR","🔔","🤡"]
+ pay()
+ print("ゲームスタート！")
+ global kaisuu
+ syokai = 0
+ for i in range(int(kaisuu)):
+  global sulot_x
+  sulot_x = 0
+  global sulot_y
+  sulot_y = 0
+  global sulot_z
+  sulot_z = 0
+  sulot_x = random.randint(0,3)
+  sulot_y = random.randint(0,3) 
+  sulot_z = random.randint(0,3)
+  if int(syokai) == 0 or str(hero["名前"]) == "777":
+    random_atari = random.randint(1,100)
+    if int(random_atari) >= 50:
+     sulot_x = sulot_y = sulot_z
+    syokai = 1
+  print(sulot_1[sulot_x],sulot_1[sulot_y],sulot_1[sulot_z]) 
+  if sulot_x == sulot_y == sulot_z == 0 :
+     sleep(1)
+     print("!!!jackpot!!!")
+     score()
+     print(hero["所持金"])
+     print(" ")
+     sleep(1.5)
+  if  sulot_x == sulot_z != sulot_y and sulot_x == sulot_z == 0:
+     print("リーチ！")
+     sleep(2.0)
+     print(" ")  
+     sleep(1.5)
+     print(sulot_1[sulot_x],sulot_1[sulot_x],sulot_1[sulot_z]) 
+     sleep(1)
+     print("!!!jackpot!!!")
+     score()
+     print(hero["所持金"])
+     print(" ")
+     sleep(1.5)
+  if sulot_x == sulot_z != sulot_y and sulot_x == sulot_z != 0:
+     print("リーチ！")
+     sleep(1.0)
+     print(" ")  
+     sleep(1.0)
+     print(sulot_1[sulot_x],sulot_1[sulot_x],sulot_1[sulot_z])
+     sleep(1)
+     print("当たり！")
+     score()
+     print(hero["所持金"])
+     print(" ")
+     sleep(1.5)
+  if sulot_x == sulot_y == sulot_z != 0 :
+     sleep(1)
+     print("当たり！")
+     score()
+     print(hero["所持金"])
+     print(" ")
+     sleep(1.5)
+  if sulot_x != sulot_z :
+     print("残念…") 
+     score()
+     print(hero["所持金"])
+     print(" ")
+     sleep(1.5)
+  if int(hero["所持金"]) <= 0 :
+     print(str(hero["名前"])+"は無一文になった...")
+     break
+
+def story():
+  global enemy
+  global game_end
+  global eria_choice
+  if str(eria_choice) == "1":
+      if int(enemy_kill["1"]) == 0 and boss_kill[eria_choice] == "0" or int(enemy_kill["1"]) == 0 and boss_win[eria_choice] == "0":
+          print("")
+          print("スライムの王「遠路はるばる、ようこそおいで下さいました")
+          print("私はここの王をさせて頂いております、ザッカ―ト12世にございます")
+          enemy_008["名前"] = "ザッカ―ト12世"
+          print("性急ではございますが、本題に入らせていただきます")
+          print("まずは、こちらの剣をどうぞ」")
+          weapon_flag["0"] = 1
+          print("")
+          print("不殺之剣を手に入れた！")
+          print("")
+          print("その剣を装備すれば、我々を殺さずに強くなることが可能です")
+          print("また、我々も貴方様を殺しません")
+          print("死闘ではないので、得られる経験値は半減してしまいますが")
+          print("使うも使わないも、貴方様次第にございます")
+          print("")
+          print("不殺之剣を装備しますか？")
+          print("1:はい")
+          print("2:いいえ")
+          weapon_soubi = input()
+          if weapon_soubi == "1":
+            weapon_E = weapon_000
+            hero["装備武器"] = weapon_E["名前"]
+            hero["武器攻撃力"] = weapon_E["武器攻撃力"]
+            hero["攻撃力倍率"] = weapon_E["攻撃力倍率"]
+            hero["命中率"] = weapon_E["命中率"]
+            hero["会心率"] = weapon_E["会心率"]
+            print(str(weapon_E["名前"]+"を装備した！"))
+            print("武器攻撃力が"+str(weapon_E["武器攻撃力"])+"になった！")
+            print("攻撃力倍率が"+str(weapon_E["攻撃力倍率"])+"になった！")
+            print("命中率が"+str(weapon_E["命中率"])+"になった！")
+            print("会心率が"+str(weapon_E["会心率"])+"になった！")
+            print("")
+            print("おお、よくお似合いですなぁ")
+            print("それでは早速、肩慣らしといきますか")
+            print("ザッカ―ト12世が勝負を挑んできた！")
+            print("")
+            enemy = enemy_008
+            battle()
+            if boss_kill["1"] == "1" or boss_win["1"] == "1":
+                print("さすがは英雄様…")
+                print("一線を退いたとはいえ、こうも簡単に組み伏せられるとは…")
+                print("")
+                print("")
+          else:
+            print("おや、よろしいのですか？")
+            print("それなら、思う存分死合ましょうぞ！")
+            enemy = enemy_008
+            battle()
+      elif int(enemy_kill["1"]) != 0 and boss_kill[eria_choice] == "0" or int(enemy_kill["1"]) != 0 and boss_win[eria_choice] == "0":
+        print("")
+        print("スライムの王「遠路はるばる、ようこそおいで下さいました」")
+        print("私はここの王をさせて頂いております、ザッカ―ト12世にございます")
+        enemy_008["名前"] = "ザッカ―ト12世"
+        print("性急ではございますが、本題に入らせていただきます")
+        print("貴方様は、彼らの味方にございますか。それとも、我らの味方にございますか")
+        print("1:人族")
+        print("2:魔族")
+        story_choice_1 = input()
+        if story_choice_1 == "1":
+          print("成程…")
+          print("貴方様のお考えはよく分かりました……")
+          print("それでは、お覚悟を！")
+          enemy_kill["1"] = 4
+          enemy = enemy_008
+          battle()
+          if boss_kill["1"] == 0:
+            print("一線を退いたとはいえ、闘いとは体に染みついているものですなぁ")
+            print("「此度の」貴方様とは、このような結末となってしまいましたが……")
+            print("我々はいつか分かり合えると信じております")
+            print("")
+            game_end = 1
+          if boss_kill["1"] == 1 or boss_win["1"] == "1":
+            print("ここまでとは…")
+            print("いえ、私の油断が招いた結果です。甘んじて受け入れましょう")
+            print("負け犬の遠吠えと思われるでしょうが、一つ忠告をさせて頂きます")
+            print("我々の恨みは、必ず王が晴らしてくださるでしょう")
+            print("ゆめゆめお忘れせぬように……")
+            print("")
+            item_8["所持数"] = 1
+            boss_kill["1"] = "1"
+            print(str(item_8["名前"])+"を手に入れた！")
+            print("次のエリアが解放された！")
+            print("")
+        if story_choice_1 == "2":
+          print("その言葉を聞いて安心しました")
+          print("では、こちらの剣をどうぞ")
+          weapon_flag["0"] = 1
+          print("")
+          print("不殺之剣を手に入れた！")
+          print("")
+          print("その剣を装備すれば、我々を殺さずに強くなることが可能です")
+          print("また、我々も貴方様を殺しません")
+          print("死闘ではないので、得られる経験値は半減してしまいますが")
+          print("使うも使わないも、貴方様次第にございます")
+          print("")
+          print("不殺之剣を装備しますか？")
+          print("1:はい")
+          print("2:いいえ")
+          w0_soubi = input()
+          if w0_soubi == "1":
+            weapon_E = weapon_000
+            hero["装備武器"] = weapon_E["名前"]
+            hero["武器攻撃力"] = weapon_E["武器攻撃力"]
+            hero["攻撃力倍率"] = weapon_E["攻撃力倍率"]
+            hero["命中率"] = weapon_E["命中率"]
+            hero["会心率"] = weapon_E["会心率"]
+            print(str(weapon_E["名前"]+"を装備した！"))
+            print("武器攻撃力が"+str(weapon_E["武器攻撃力"])+"になった！")
+            print("攻撃力倍率が"+str(weapon_E["攻撃力倍率"])+"になった！")
+            print("命中率が"+str(weapon_E["命中率"])+"になった！")
+            print("会心率が"+str(weapon_E["会心率"])+"になった！")
+            print("")
+            print("おお、よくお似合いですなぁ")
+            print("それでは早速、肩慣らしといきますか")
+            print("ザッカ―ト12世が勝負を挑んできた！")
+            print("")
+            enemy = enemy_008
+            battle()
+            if boss_kill["1"] == "1":
+                print("さすがは英雄様…")
+                print("一線を退いたとはいえ、こうも簡単に組み伏せられるとは…")
+                print("英雄とは何か…ですか？")
+                print("それは…私の口からよりも、こちらをお読みになられた方が良いでしょう")
+                print("")
+                print("■■と■■の書物を手に入れた！")
+                print("")
+                print("文字化け…？")
+                print("ふむ…まだ資格がないと判断されたようですね…")
+                print("")
+          else:
+            print("おや、よろしいのですか？")
+            print("それなら、思う存分死合ましょうぞ！")
+            enemy = enemy_008
+            battle()
+  if str(eria_choice) == "2":
+      print("骸骨将軍が戦いを挑んできた！")
+      enemy = enemy_015
+      battle()
+
+def search():
+  global eria_choice
+  global enemy
+  while True:
+   print("現在の進行度は、"+str(sinkoudo[eria_choice])+"%です")
+   if int(sinkoudo[eria_choice]) < 100:
+     print("1:先に進む(進行度＋20～50%)")
+   if int(sinkoudo[eria_choice]) >= 100:
+     print("1:魔族と戦う")
+   print("2:町に戻る")
+   if int(sinkoudo[eria_choice]) >=100 and int(boss_kill[eria_choice]) == 0 or int(sinkoudo[eria_choice]) >=100 and int(boss_win[eria_choice]):
+     print("3:エリアボスの元へ向かう")
+   search_comand = input()
+   if int(search_comand) == 1:
+     random_search = random.randint(1,100)
+     if 1 <= random_search <= 10 or int(sinkoudo[eria_choice]) >= 100:
+       encount()
+       return
+     elif 11<= random_search <= 90:
+       random_sinkoudo = random.randint(20,50)
+       sinkoudo[eria_choice] = int(sinkoudo[eria_choice])+int(random_sinkoudo)
+       if int(sinkoudo[eria_choice]) >=100:
+         sinkoudo[eria_choice] =100
+       print("進行度が"+str(random_sinkoudo)+"%上がった！")
+       print("")
+     elif 91<= random_search <= 100:
+        random_gold = int(hero["レベル"]) * random.randint(1000,10000)
+        hero["所持金"] = int(hero["所持金"]) + int(random_gold)
+        print(str(hero["名前"])+"は宝箱を見つけた！")
+        print(str(hero["名前"])+"は"+str(random_gold)+"Gを手に入れた！")
+        print("")
+   elif int(search_comand) == 2:
+     return
+   elif int(search_comand) == 3 and int(sinkoudo[eria_choice]) >=100:
+     story()
+     return
+
+def encount():
+   global enemy
+   global eria_choice
+   global random_force
+   random_force_1 = [50,100,150]
+   random_force = random_force_1[random.randint(0,2)]
+   if eria_choice == "0":
+     encount_jyougen = int(len(encount_000)) -1
+     random_encount = random.randint(0,int(encount_jyougen))
+     enemy = encount_000[random_encount]
+   if eria_choice == "1":
+     encount_jyougen = int(len(encount_001)) -1
+     random_encount = random.randint(0,int(encount_jyougen))
+     if int(enemy_kill[eria_choice]) >= 10 and boss_kill[eria_choice] == "0" or int(enemy_kill[eria_choice]) >= 10 and boss_kill[eria_choice] == "0":
+        print("スライムの王が現れた！")
+        print("スライムの王「これ以上民を傷つけさせぬ！」")
+        sleep(1)
+        enemy = enemy_008
+        battle()
+        return
+     else:
+        enemy = encount_001[random_encount]
+   if eria_choice == "2":
+     encount_jyougen = len(encount_002) -1
+     random_encount = random.randint(0,int(encount_jyougen))
+     enemy = encount_002[random_encount]
+   if 50 <= random_force <= 99:
+      syougou = "脆弱な"
+   elif 100 <= random_force <= 149:
+      syougou = "平凡な"
+   elif 150 <= random_force <= 200:
+      syougou = "壮健な"
+   print(str(syougou)+str(enemy["名前"])+"と出会った！")
+   print("1:戦う （勝てば進行度＋50％）")
+   print("2:戦わない")
+   encount_command_1 = input()
+   print("")
+   sleep(1)
+   if int(encount_command_1) == 1:
+      print(str(syougou)+str(enemy["名前"])+"に戦いを挑んだ！")
+      battle()
+      return
+   if int(encount_command_1) == 2:
+      print("この場をそっと離れた")
+      print("")
+      search()
+      return
+
+def battle():
+   global enemy
+   global random_force
+   global boss_syokai
+   global eria_choice
+   global sinkoudo_1
+   global tousou
+   global tujyou_atk
+   global hero_use_skill
+   if enemy["ボス"] == "0":
+     enemy_1["名前"]   = enemy["名前"]
+     enemy_1["レベル"] = (int(hero["レベル"]) + int(enemy["レベル"]))//2
+     enemy_1["最大HP"] = int(enemy["基礎HP"]) * int(enemy_1["レベル"]) * (int(random_force)/100)
+     enemy_1["最大MP"] = int(enemy["基礎MP"]) * int(enemy_1["レベル"]) * (int(random_force)/100)
+     enemy_1["攻撃力"] = int(enemy["基礎攻撃力"]) * int(enemy_1["レベル"]) * (int(random_force)/100)
+     enemy_1["防御力"] = int(enemy["基礎防御力"]) * int(enemy_1["レベル"]) * (int(random_force)/100)
+     enemy_1["素早さ"] = int(enemy["基礎素早さ"]) * int(enemy_1["レベル"]) * (int(random_force)/100)
+     enemy_1["討伐報酬"] = int(int(enemy["基礎討伐報酬"]) * int(enemy_1["レベル"]) * (int(random_force)/100))
+     enemy_1["経験値"] = int(int(enemy["基礎経験値"]) * int(enemy_1["レベル"]) * (int(random_force)/100))
+     enemy_1["現在HP"] = int(enemy_1["最大HP"])
+     enemy_1["現在MP"] = int(enemy_1["最大MP"])
+     enemy_1["会心率"] = int(enemy["会心率"]) * (int(random_force)/100)
+     enemy_1["会心倍率"] = int(enemy["会心倍率"]) * (int(random_force)/100)
+     enemy_1["回避率"] = int(enemy["回避率"]) * (int(random_force)/100)
+     enemy_1["命中率"] = int(enemy["命中率"]) * (int(random_force)/100)
+     enemy_1["ダメージカット率"] = int(enemy["ダメージカット率"])
+     enemy_1["AI"]     = enemy["AI"]
+     enemy_1["ボス"]   = enemy["ボス"]
+   elif enemy["ボス"] == "1":
+     boss_buff = int(enemy_kill[eria_choice])
+     enemy_1["名前"]   = enemy["名前"]
+     enemy_1["レベル"] = int(enemy["レベル"])
+     enemy_1["最大HP"] = int(enemy["基礎HP"]) + int(enemy["補正値1"]) * int(boss_buff)
+     enemy_1["最大MP"] = int(enemy["基礎MP"]) + int(enemy["補正値1"]) * int(boss_buff)
+     enemy_1["攻撃力"] = int(enemy["基礎攻撃力"]) + int(enemy["補正値2"]) * int(boss_buff)
+     enemy_1["防御力"] = int(enemy["基礎防御力"]) + int(enemy["補正値2"]) * int(boss_buff)
+     enemy_1["素早さ"] = int(enemy["基礎素早さ"]) + int(enemy["補正値2"]) * int(boss_buff)
+     enemy_1["討伐報酬"] = int(enemy["基礎討伐報酬"])  + int(enemy["基礎討伐報酬"]) * int(boss_buff)
+     enemy_1["経験値"] = int(enemy["基礎経験値"]) + int(enemy["基礎経験値"]) * int(boss_buff)
+     enemy_1["現在HP"] = int(enemy_1["最大HP"])
+     enemy_1["現在MP"] = int(enemy_1["最大MP"])
+     enemy_1["会心率"] = int(enemy["会心率"])   + int(boss_buff)
+     enemy_1["会心倍率"] = int(enemy["会心倍率"]) + int(boss_buff)/10
+     enemy_1["回避率"] = int(enemy["回避率"]) + int(boss_buff)
+     enemy_1["命中率"] = int(enemy["命中率"]) + int(boss_buff)
+     enemy_1["ダメージカット率"] = int(enemy["ダメージカット率"]) + int(boss_buff)
+     enemy_1["AI"]     = enemy["AI"]
+     enemy_1["ボス"]   = enemy["ボス"]
+   tousou = 0
+   boss_syokai = 0
+   LV_UP = 0
+   turn = 1
+   while int(enemy_1["現在HP"]) >= 1 and int(hero["現在HP"]) >= 1:
+    HERO_SPD = int(hero["素早さ"]) * (100 + 10 * int(hero_buff["素早さ"]))/100 * (100 - 10 * int(hero_debuff["素早さ"]))/100
+    mahi_random_hero      = random.randint(1,100)
+    enemy_turn_end        = 0
+    enemy_goukei_damege   = 0
+    hero_goukei_damege    = 0
+    tujyou_atk            = 0
+    print()
+    print(str(turn)+"ターン目")
+    print()
+    turn = int(turn) + 1
+    if int(enemy_1["現在HP"]) > 0 and int(HERO_SPD) < int(enemy_1["素早さ"]) and enemy_turn_end == 0:
+      enemy_turn_end = 1
+      enemy_turn()
+      if tousou == 1:
+        break
+    if int(hero["現在HP"]) > 0 and int(tousou) == 0 and int(hero_ijyou["麻痺"]) <= int(mahi_random_hero):
+     if int(hero_ijyou["毒"]) > 0:
+       poison_damege = int(hero["現在HP"])//100 * int(hero_ijyou["毒"])
+       hero["現在HP"] = int(hero["現在HP"]) - int(poison_damege)
+       print(str(hero["名前"])+"は毒で"+str(poison_damege)+"のダメージを受けた！")
+     print(hero["名前"])
+     print("Lv:"+str(hero["レベル"]))
+     print("HP:"+str(hero["現在HP"])+"/"+str(hero["最大HP"]))
+     print("MP:"+str(hero["現在MP"])+"/"+str(hero["最大MP"]))
+     if int(hero_buff["攻撃力"]) != 0 or int(hero_debuff["攻撃力"]) != 0:
+       hero_change_per = int(hero_buff["攻撃力"]) - int(hero_debuff["攻撃力"])
+       if hero_change_per > 0:
+           up_down = "上昇中！"
+       else:
+           up_down = "低下中！"
+       print("攻撃力 "+str(hero_change_per)+"%"+str(up_down))
+     if int(hero_buff["防御力"]) != 0 or int(hero_debuff["防御力"]) != 0:
+       hero_change_per = int(hero_buff["防御力"]) - int(hero_debuff["防御力"])
+       if hero_change_per > 0:
+           up_down = "上昇中！"
+       else:
+           up_down = "低下中！"
+       print("防御力 "+str(hero_change_per)+"%"+str(up_down))
+     if int(hero_buff["素早さ"]) != 0 or int(hero_debuff["素早さ"]) != 0:
+       hero_change_per = int(hero_buff["素早さ"]) - int(hero_debuff["素早さ"])
+       if hero_change_per > 0:
+           up_down = "上昇中！"
+       else:
+           up_down = "低下中！"
+       print("素早さ "+str(hero_change_per)+"%"+str(up_down))
+     print("")
+     print("1:通常攻撃")
+     print("2:スキル")
+     print("3:アイテム ")
+     battle_command = input()
+     sleep(1)
+     if int(battle_command) == 1:
+       tujyou_atk = 1
+       hero_use_skill = skill_002
+       skill()
+     if int(battle_command) == 2:
+       skill()
+     if int(battle_command) == 3:
+         item()
+    if int(hero_ijyou["麻痺"]) >= int(mahi_random_hero):
+      print(str(hero["名前"])+"は体が麻痺して動けない！")
+      print("")
+      hero_ijyou["麻痺"] = int(hero_ijyou["麻痺"]) - 20
+    if int(enemy_1["現在HP"]) > 0 and int(enemy_turn_end) == 0:
+      enemy_turn_end = 1
+      enemy_turn()
+      if tousou == 1:
+        break
+   for key in hero_buff:
+      hero_buff[key] = 0
+   for key in hero_debuff:
+      hero_debuff[key] = 0
+   for key in hero_ijyou:
+      hero_ijyou[key] = 0
+   if int(tousou) == 1:
+     print(str(enemy_1["名前"])+"に逃げられた！")
+     if enemy_1["ボス"] == "0":
+       print("もう一度探索しますか？")
+       print("1:はい")
+       print("2:いいえ")
+       rebattle_comand = int(input())
+       if rebattle_comand == 1:
+         search()
+       else:
+         print("")
+   if int(hero["現在HP"]) <= 0:
+      if int(sinkoudo[eria_choice]) > 100:
+       sinkoudo[eria_choice] = int(sinkoudo[eria_choice])-5
+       print("進行度が5％低下した")
+      print(str(hero["名前"])+"は"+str(enemy_1["名前"])+"に敗北した！")
+      print("")
+      hero["現在HP"] = 1
+   if int(enemy_1["現在HP"]) <= 0:
+     print(str(enemy_1["名前"])+"に勝利した！")
+     if str(enemy_1["ボス"]) == "0" and int(sinkoudo[eria_choice]) < 100:
+       sinkoudo[eria_choice] += 5
+       print("進行度が5％上昇した！")
+       if int(sinkoudo[eria_choice]) >=100:
+           sinkoudo[eria_choice] = 100
+     if hero["装備武器"] == "不殺之剣":
+        enemy_1["経験値"] = int(enemy_1["経験値"]) // 2
+        if enemy_1["ボス"] == "1":
+          boss_win[eria_choice] = "1"
+     else:
+         enemy_kill["0"] = int(enemy_kill["0"]) + 1
+         enemy_kill[eria_choice] = int(enemy_kill[eria_choice]) + 1
+         if enemy_1["ボス"] == "1":
+          boss_kill[eria_choice] = "1"
+         if enemy == enemy_001:
+           drop_item_name = item_1["名前"] 
+           item_1["所持数"] = int(item_1["所持数"]) + 1
+         if enemy == enemy_002:
+           drop_item_name = item_2["名前"] 
+           item_2["所持数"] = int(item_2["所持数"]) + 1
+         if enemy == enemy_003:
+           drop_item_name = item_3["名前"] 
+           item_3["所持数"] = int(item_3["所持数"]) + 1
+         if enemy == enemy_004:
+           drop_item_name = item_4["名前"] 
+           item_4["所持数"] = int(item_4["所持数"]) + 1
+         if enemy == enemy_005:
+           drop_item_name = item_5["名前"] 
+           item_5["所持数"] = int(item_5["所持数"]) + 1
+         if enemy == enemy_006:
+           drop_item_name = item_6["名前"] 
+           item_6["所持数"] = int(item_6["所持数"]) + 1
+         if enemy == enemy_007:
+           drop_item_name = item_7["名前"] 
+           item_7["所持数"] = int(item_7["所持数"]) + 1
+         if enemy == enemy_008:
+           drop_item_name = item_8["名前"] 
+           item_8["所持数"] = int(item_8["所持数"]) + 1
+         print(str(drop_item_name)+"を手に入れた！")
+     hero["所持金"] = int(hero["所持金"]) + int(enemy_1["討伐報酬"])
+     print(str(enemy_1["討伐報酬"])+"G獲得した！")
+     print(str(enemy_1["経験値"])+"の経験値を獲得した！")
+     before_lv = int(hero["レベル"])
+     before_hp = int(hero["最大HP"])
+     before_mp = int(hero["最大MP"])
+     before_atk = int(hero["攻撃力"])
+     before_def = int(hero["防御力"])
+     before_spd = int(hero["素早さ"])
+     while True:
+      if int(hero["次のレベルまで"]) <= int(enemy_1["経験値"]):
+       LV_UP = 1
+       enemy_1["経験値"] = int(enemy_1["経験値"]) - int(hero["次のレベルまで"])
+       hero["必要経験値"] = int(hero["必要経験値"]) + int(hero["レベル"])
+       hero["次のレベルまで"] = int(hero["必要経験値"])
+       HP_UP  = int(int(hero_kiso["HP"]) * (100 + int(hero["レベル"]))/100)
+       MP_UP  = int(int(hero_kiso["MP"]) * (100 + int(hero["レベル"]))/100)
+       ATK_UP = int(int(hero_kiso["攻撃力"]) * (100 + int(hero["レベル"]))/100)
+       DEF_UP = int(int(hero_kiso["防御力"]) * (100 + int(hero["レベル"]))/100)
+       SPD_UP = int(int(hero_kiso["防御力"]) * (100 + int(hero["レベル"]))/100)
+       hero["レベル"] = int(hero["レベル"]) + 1
+       hero["最大HP"] = int(hero["最大HP"]) + int(HP_UP)
+       hero["最大MP"] = int(hero["最大MP"]) + int(MP_UP)
+       hero["攻撃力"] = int(hero["攻撃力"]) + int(ATK_UP)
+       hero["防御力"] = int(hero["防御力"]) + int(DEF_UP)
+       hero["素早さ"] = int(hero["素早さ"]) + int(SPD_UP)
+      else:
+        hero["次のレベルまで"]  = int(hero["次のレベルまで"]) - int(enemy_1["経験値"])
+        break
+     if LV_UP == 1:
+       LV_UP = 0
+       print("レベルが"+str(before_lv)+"から"+str(hero["レベル"])+"に上がった！")
+       print("HPが"+str(before_hp)+"から"+str(hero["最大HP"])+"に上がった！")
+       print("MPが"+str(before_mp)+"から"+str(hero["最大MP"])+"に上がった！")
+       print("攻撃力が"+str(before_atk)+"から"+str(hero["攻撃力"])+"に上がった！")
+       print("防御力が"+str(before_def)+"から"+str(hero["防御力"])+"に上がった！")
+       print("素早さが"+str(before_spd)+"から"+str(hero["素早さ"])+"に上がった！")
+     else:
+       print("次のレベルまで あと"+str(hero["次のレベルまで"]))
+     print("")
+     if enemy_1["ボス"] == "0":
+       print("もう一度探索しますか？")
+       print("1:はい")
+       print("2:いいえ")
+       rebattle_comand = int(input())
+       if rebattle_comand == 1:
+         search()
+       else:
+         print("")
+
+def start():
+  global eria_choice
+  global game_end
+  global random_force
+  global enemy
+  global start_count
+  game_end = 0
+  if int(start_count) == 0:
+   start_count = int(start_count) + 1
+   print("人族の王「召喚は成功したか…貴様の名はなんという？」")
+   hero["名前"]   = input()
+   random.seed(hero["名前"])
+   hero_kiso["HP"]     = random.randint(500,1000)
+   hero_kiso["MP"]     = random.randint(500,1000)
+   hero_kiso["攻撃力"] = random.randint(100,200)
+   hero_kiso["防御力"] = random.randint(100,200)
+   hero_kiso["素早さ"] = random.randint(100,200)
+   hero_ST = int(hero_kiso["HP"]) + int(hero_kiso["MP"]) + int(hero_kiso["攻撃力"]) + int(hero_kiso["防御力"]) + int(hero_kiso["素早さ"])
+   hero["最大HP"] = int(hero_kiso["HP"])
+   hero["現在HP"] = int(hero["最大HP"])
+   hero["最大MP"] = int(hero_kiso["MP"])
+   hero["現在MP"] = int(hero["最大MP"])
+   hero["攻撃力"] = int(hero_kiso["攻撃力"]) 
+   hero["防御力"] = int(hero_kiso["防御力"])
+   hero["素早さ"] = int(hero_kiso["素早さ"])
+   sleep(1)
+   print("「"+str(hero["名前"])+"か")
+   if str(hero["名前"]) == "boss":
+     eria_choice = "1"
+     enemy = enemy_008
+     battle()
+   if str(hero["名前"]) == "gold":
+     eria_choice = "1"
+     enemy = enemy_007
+     random_force = 50
+     battle()
+   if str(hero["名前"]) == "poison":
+     eria_choice = "1"
+     enemy = enemy_004
+     random_force = 50
+     battle()
+   if str(hero["名前"]) == "battle":
+     eria_choice = "1"
+     enemy = enemy_001
+     random_force = 50
+     battle()
+   if str(hero["名前"]) == "tensei":
+     hero["レベル"] = 10000
+   print("さて、肝心の貴様のステータスは…")
+   print("HP "+str(hero_kiso["HP"]))
+   print("MP "+str(hero_kiso["MP"]))
+   print("攻撃力 "+str(hero_kiso["攻撃力"]))
+   print("防御力 "+str(hero_kiso["防御力"]))
+   print("素早さ "+str(hero_kiso["素早さ"]))
+   if str(hero["名前"]) == "kensyou":
+     hero["所持金"] = 100000000000000000000
+     weapon_flag["10"] = 1
+     equip_flag["10"] = 1
+   elif  hero_ST >= 1001:
+    print("""人族の王「…素晴らしい！数年に一度の逸材じゃな！
+    国をあげて支援しよう！
+    まずは軍資金として100万G。
+    次に我が城で最も強い武器と防具を支給しよう。
+    疎ましき魔族共と魔王を駆逐し、
+    共に我ら人族だけの楽園を造ろうではないか！」""")
+    print("1000000Gを手に入れた！")
+    print(str(weapon_005["名前"])+"を手に入れた！")
+    print(str(equip_005["名前"])+"を手に入れた！")
+    hero["所持金"] = 1000000
+    weapon_flag["5"] = 1
+    equip_flag["5"] = 1
+   elif 700 <= hero_ST <= 750:
+    print("""人族の王「…ゴミじゃな。
+    貴様にやる金など無い。
+    早々に我が城から立ち去れ」""")
+    hero["所持金"] = 0
+    print("兵士につまみ出されてしまった！")
+   elif 751 <= hero_ST <=800:
+    print("""人族の王「…普通じゃな。
+    10000Gとそこそこの武器をやろう。
+    魔族共を駆逐したまえ」""")
+    hero["所持金"] = 10000
+    weapon_flag["2"] = 1
+    equip_flag["2"]  = 1
+    print("10000Gを手に入れた！")
+    print(str(weapon_002["名前"])+"を手に入れた！")
+    print(str(equip_002["名前"])+"を手に入れた！")
+   elif 801 <= hero_ST <= 950:
+    print("""人族の王「…まずまずじゃな。
+    50000Gとそれなりの武器をやろう。
+    悍ましき魔族共を駆逐してくれたまえ」""")
+    hero["所持金"] = 50000
+    weapon_flag["3"] = 1
+    equip_flag["3"]  = 1
+    print("50000Gを手に入れた！")
+    print(str(weapon_003["名前"])+"を手に入れた！")
+    print(str(equip_003["名前"])+"を手に入れた！")
+   elif 951 <= hero_ST <= 1000:
+    print("""人族の王「…なかなかじゃな。
+    100000Gと良い武器をやろう。
+    悍ましき魔族共と憎き魔王を駆逐してくれたまえ」""")
+    hero["所持金"] = 100000
+    weapon_flag["4"] = 1
+    equip_flag["4"]  = 1
+    print("100000Gを手に入れた！")
+    print(str(weapon_004["名前"])+"を手に入れた！")
+    print(str(equip_004["名前"])+"を手に入れた！")
+  if int(start_count) >= 2:
+   print("人族の王「召喚は成功したか…貴様の名は…"+str(hero["名前"])+"か")
+   hero_ST = int(hero_kiso["HP"]) + int(hero_kiso["MP"]) + int(hero_kiso["攻撃力"]) + int(hero_kiso["防御力"]) + int(hero_kiso["素早さ"])
+   hero["最大HP"] = int(hero_kiso["HP"])
+   hero["現在HP"] = int(hero["最大HP"])
+   hero["最大MP"] = int(hero_kiso["MP"])
+   hero["現在MP"] = int(hero["最大MP"])
+   hero["攻撃力"] = int(hero_kiso["攻撃力"]) 
+   hero["防御力"] = int(hero_kiso["防御力"])
+   hero["素早さ"] = int(hero_kiso["素早さ"])
+   sleep(1)
+   print("""さて、肝心の貴様のステータスは…
+   HP """+str(hero_kiso["HP"])+"""
+   MP """+str(hero_kiso["MP"])+"""
+   攻撃力 """+str(hero_kiso["攻撃力"])+"""
+   防御力 """+str(hero_kiso["防御力"])+"""
+   素早さ """+str(hero_kiso["素早さ"])+"""か」""")
+   if  hero_ST >= 1001:
+    print("""人族の王「…素晴らしい！数年に一度の逸材じゃな！
+    国をあげて支援しよう！
+    まずは、100万G。
+    次に我が城で最も強い武器と防具を支給しよう。
+    悍ましき魔族共と憎き魔王を駆逐し、
+    共に我ら人族だけの楽園を造ろうではないか！」""")
+    print("1000000Gを手に入れた！")
+    print(str(weapon_005["名前"])+"を手に入れた！")
+    print(str(equip_005["名前"])+"を手に入れた！")
+    hero["所持金"] = 1000000
+    weapon_flag["5"] = 1
+    equip_flag["5"] = 1
+   elif 700 <= hero_ST <= 750:
+    print("""人族の王「…ゴミじゃな。
+    貴様にやる金など無い。
+    早々に我が城から立ち去れ」""")
+    hero["所持金"] = 0
+    print("兵士につまみ出されてしまった！")
+   elif 751 <= hero_ST <=800:
+    print("""人族の王「…普通じゃな。
+    10000Gとそこそこの武器をやろう。
+    魔族共を駆逐したまえ」""")
+    hero["所持金"] = 10000
+    weapon_flag["2"] = 1
+    equip_flag["2"]  = 1
+    print("10000Gを手に入れた！")
+    print(str(weapon_002["名前"])+"を手に入れた！")
+    print(str(equip_002["名前"])+"を手に入れた！")
+   elif 801 <= hero_ST <= 950:
+    print("""人族の王「…まずまずじゃな。
+    50000Gとそれなりの武器をやろう。
+    悍ましき魔族共を駆逐してくれたまえ」""")
+    hero["所持金"] = 50000
+    weapon_flag["3"] = 1
+    equip_flag["3"]  = 1
+    print("50000Gを手に入れた！")
+    print(str(weapon_003["名前"])+"を手に入れた！")
+    print(str(equip_003["名前"])+"を手に入れた！")
+   elif 951 <= hero_ST <= 1000:
+    print("""人族の王「…なかなかじゃな。
+    100000Gと良い武器をやろう。
+    悍ましき魔族共と憎き魔王を駆逐してくれたまえ」""")
+    hero["所持金"] = 100000
+    weapon_flag["4"] = 1
+    equip_flag["4"]  = 1
+    print("100000Gを手に入れた！")
+    print(str(weapon_004["名前"])+"を手に入れた！")
+    print(str(equip_004["名前"])+"を手に入れた！")
+
+while True:
+ if int(start_count) == 0:
+   start()
+ if int(game_end) == 1:
+   print("GAME OVER")
+   break
+ print("")
+ print("何をしますか？")
+ print("1:魔族領を探索")
+ print("2:施設")
+ print("3:ステータス")
+ print("4:持ち物")
+ print("5:ゲームをやめる")
+ regular_command = input()
+ print("")
+ sleep(1)
+ if int(regular_command) == 1:
+   print("どこに行きますか？")
+   print("1:スライムの森 進行度:"+str(sinkoudo["1"])+"%")
+   if boss_kill["1"] == "1" or boss_win["1"] == "1":
+    print("2:骸骨の洞窟 進行度:"+str(sinkoudo["2"])+"%")
+   if boss_kill["2"] == "2" or boss_win["2"] == "1":
+    print("3:黄金蛇の湖 進行度:"+str(sinkoudo["3"])+"%")
+    print("4:単眼鬼の集落 進行度:"+str(sinkoudo["4"])+"%")
+    print("5:首狩兎の草原 進行度:"+str(sinkoudo["5"])+"%")
+    print("6:魔王城 進行度:"+str(sinkoudo["6"])+"%")
+   eria_choice = input("")
+   search()
+ if int(regular_command) == 2:
+   while True:
+    if int(hero["所持金"]) >= training_cost:
+     can = "○"
+    else :
+     can = "×"
+    ohuse = int(hero["レベル"]) * 10
+    print("どこに行きますか？")
+    print("1:宿屋（"+str(ohuse)+"Gで全回復)")
+    print("2:装備屋")
+    print("3:修行場(→"+str(can)+"←) (使用料:"+str(training_cost)+")")
+    print("4:賭博場")
+    print("5:転生の神殿")
+    print("6:謎のほこら")
+    print("7:戻る")
+    sisetu_comand = input()
+    sleep(1)
+    if int(sisetu_comand) == 1:
+      if int(hero["所持金"]) < ohuse:
+       print("お金が足りない！")
+      else:
+       hero["所持金"] = int(hero["所持金"])-int(ohuse)
+       hero["現在HP"] = int(hero["最大HP"])
+       hero["現在MP"] = int(hero["最大MP"])
+       print("ぐっすり眠り全回復した！")
+       print("")
+       sin_flag["怠惰"] = int(sin_flag["怠惰"]) + 1
+    if int(sisetu_comand) == 2:
+     soubiya()
+    if int(sisetu_comand) == 3:
+      if int(hero["所持金"]) < training_cost:
+       print("お金が足りない！")
+      else:
+       training()
+    if int(sisetu_comand) == 4:
+      sulot()
+    if int(sisetu_comand) == 5:
+      if int(hero["レベル"]) >= 1000:
+        print("転生しますか？")
+        print("1:はい")
+        print("2:いいえ")
+        tensei_comand = input()
+        if int(tensei_comand) == 1:
+          print("体が光り輝き意識が朦朧とする……")
+          print("やがて意識が暗転した………")
+          hero_kiso["HP"]  =  int(hero_kiso["HP"]) + int(hero["レベル"])//100
+          hero_kiso["MP"]  =  int(hero_kiso["MP"]) + int(hero["レベル"])//100
+          hero_kiso["攻撃力"] = int(hero_kiso["攻撃力"]) + int(hero["レベル"])//200
+          hero_kiso["防御力"] = int(hero_kiso["防御力"]) + int(hero["レベル"])//200
+          hero_kiso["素早さ"] = int(hero_kiso["素早さ"]) + int(hero["レベル"])//200
+          hero["レベル"] = 1
+          hero["最大HP"] = int(hero_kiso["HP"])
+          hero["現在HP"] = hero["最大HP"]
+          hero["攻撃力"] = int(hero_kiso["攻撃力"]) 
+          hero["防御力"] = int(hero_kiso["防御力"])
+          hero["素早さ"] = int(hero_kiso["素早さ"]) 
+          hero["必要経験値"] = 100
+          hero["次のレベルまで"] = 100
+          hero["装備武器"] = "無し"
+          hero["武器攻撃力"] = 0
+          hero["攻撃力倍率"] = 0
+          hero["装備防具"] = "無し"
+          hero["防具防御力"] = 0
+          hero["ダメージカット率"] = 0
+          hero["所持金"] = 0
+          for key in enemy_kill:
+           enemy_kill[key] = 0
+          training_cost = 10
+          taida = 0
+          start_count = int(start_count) +1
+          start()
+          break
+      else:
+          print("今はまだその時ではない")
+          break
+    if int(sisetu_comand) == 6:
+      if int(hero["レベル"]) >= 10000 and int(evil_king_kill) == 0:
+        print("魔族の王の元へと続く道が現れた")
+        print("魔族の王の元に行きますか？")
+        print("1:行く")
+        print("2:行かない")
+        boss_encount=input()
+        if int(boss_encount) == 1:
+          enemy = enemy_100
+          battle()
+        if int(boss_encount) == 2:
+          print("もう少し強くなろう")
+          boss_encount = 0
+          break
+      else:
+        print("今はまだその時ではない")
+        break
+    if int(sisetu_comand) == 7:
+      break
+ if int(regular_command) == 3:
+   print("名前:"+str(hero["名前"]))
+   print("レベル:"+str(hero["レベル"]))
+   print("次のレベルまで:"+str(hero["次のレベルまで"]))
+   print("HP:"+str(hero["現在HP"])+"/"+str(hero["最大HP"]))
+   print("MP:"+str(hero["現在MP"])+"/"+str(hero["最大MP"]))
+   print("攻撃力:"+str(hero["攻撃力"]))
+   print("防御力:"+str(hero["防御力"]))
+   print("素早さ:"+str(hero["素早さ"]))
+ if int(regular_command) == 4:
+    item()
+ if int(regular_command) == 5:
+  print("全てのデータが消えてしまいます! 本当によろしいですか？")
+  print("1:はい")
+  print("2:いいえ")
+  print("")
+  owari_comand = int(input())
+  if owari_comand == 1:
+    print("お疲れ様でした")
+    break
+  if owari_comand == 2:
+    print("")
+
+if int(enemy_1["レベル"]) > lv_jyougen[int(eria_choice)] and int(eria_choice) != 0:
+       enemy_1["レベル"] = lv_jyougen[int(eria_choice)]
